@@ -31,14 +31,15 @@ def nonradiative_decay_rate(gamma_tot, gamma_r):
 
 
 def mie_coefficients(n_max, rho1, rho2, eps1, eps2):
-    jn1 = spherical_bessel(n_max, rho1)
-    jn2 = spherical_bessel(n_max, rho2)
-    jn1prime = spherical_bessel(n_max, rho1, d=True)
-    jn2prime = spherical_bessel(n_max, rho2, d=True)
-    hn1 = spherical_hankel(n_max, rho1, jn1)
+    n = np.ndarray(1, n_max + 1)
+    jn1 = scipy.special.spherical_jn(n, rho1)
+    jn2 = scipy.special.spherical_jn(n, rho2)
+    jn1prime = scipy.special.spherical_jn(n, rho1, derivative=True)
+    jn2prime = scipy.special.spherical_jn(n, rho2, derivative=True)
+    hn1 = spherical_hankel(n, rho1, jn1)
     psinprime1 = psi_n_prime(rho1, jn1, jn1prime)
     psinprime2 = psi_n_prime(rho2, jn2, jn2prime)
-    zetanprime1 = zeta_n_prime(n_max, rho1, jn1prime, hn1)
+    zetanprime1 = zeta_n_prime(n, rho1, jn1prime, hn1)
     an = mie_bn(1.0, 1.0, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1)
     bn = mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1)
     return an, bn
@@ -50,14 +51,8 @@ def mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1):
     return numerator / denominator
 
 
-def spherical_bessel(n_max, z, d=False):
-    n = np.ndarray(1, n_max + 1)
-    return scipy.special.spherical_jn(n, z, derivative=d)
-
-
-def spherical_hankel(n_max, z, jn, d=False):
-    n = np.ndarray(1, n_max + 1)
-    yn = scipy.special.spherical_yn(n, z, derivative=d)
+def spherical_hankel(n, z, jn, derivative=False):
+    yn = scipy.special.spherical_yn(n, z, derivative=derivative)
     return jn + 1j*yn
 
 
@@ -65,6 +60,6 @@ def psi_n_prime(z, jn, jnprime):
     return jn + z*jnprime
 
 
-def zeta_n_prime(n_max, z, jnprime, hn):
-    hnprime = spherical_hankel(n_max, z, jnprime, d=True)
+def zeta_n_prime(n, z, jnprime, hn):
+    hnprime = spherical_hankel(n, z, jnprime, derivative=True)
     return hn + z*hnprime

@@ -77,7 +77,7 @@ def mie_coefficients(n, rho1, rho2, eps1, eps2):
     zetanprime1 = zeta_n_prime(n, rho1, jnprime1, hn1)
     an = mie_bn(1.0, 1.0, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1)
     bn = mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1)
-    return an, bn
+    return (an, bn)
 
 
 def mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1):

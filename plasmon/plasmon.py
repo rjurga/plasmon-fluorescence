@@ -4,30 +4,25 @@ import scipy.special
 
 def total_decay_rate_radial(n_max, bn, hn, kd):
     terms = np.array((n * (n+1) * (2*n + 1) for n in range(1, n_max + 1)))
-    terms = np.multiply(terms, bn)
-    terms = np.multiply(terms, np.square(hn / kd))
+    terms = terms * bn * np.square(hn/kd)
     return 1.0 + 1.5*np.real(np.sum(terms))
 
 
 def total_decay_rate_tangential(n_max, an, bn, zetanprime, hn, kd):
     terms = np.array((n + 0.5 for n in range(1, n_max + 1)))
-    terms = np.multiply(terms,
-                        (np.multiply(bn, np.square(zetanprime / kd))
-                         + np.multiply(an, np.square(hn))))
+    terms = terms * (bn*np.square(zetanprime/kd) + an*np.square(hn))
     return 1.0 + 1.5*np.real(np.sum(terms))
 
 
 def radiative_decay_rate_radial(n_max, bn, jn, hn, kd):
     terms = np.array((n * (n+1) * (2*n + 1) for n in range(1, n_max + 1)))
-    terms = np.multiply(terms, np.square((jn + np.multiply(bn, hn)) / kd))
+    terms = terms * np.square((jn+bn*hn)/kd)
     return 1.5 * np.real(np.sum(terms))
 
 
 def radiative_decay_rate_tangential(n_max, an, bn, jn, hn, psinprime, zetanprime, kd):
     terms = np.array((2*n + 1 for n in range(1, n_max + 1)))
-    terms = np.multiply(terms,
-                        (np.square(jn + np.multiply(an, hn))
-                         + np.square((psinprime + np.multiply(bn, zetanprime)) / kd)))
+    terms = terms * (np.square(jn+an*hn) + np.square((psinprime+bn*zetanprime)/kd))
     return 0.75 * np.real(np.sum(terms))
 
 
@@ -50,10 +45,8 @@ def mie_coefficients(n_max, rho1, rho2, eps1, eps2):
 
 
 def mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1):
-    numerator = (eps1*np.multiply(jn1, psinprime2)
-                 - eps2*np.multiply(jn2, psinprime1))
-    denominator = (eps2*np.multiply(jn2, zetanprime1)
-                   - eps1*np.multiply(hn1, psinprime2))
+    numerator = eps1*jn1*psinprime2 - eps2*jn2*psinprime1
+    denominator = eps2*jn2*zetanprime1 - eps1*hn1*psinprime2
     return numerator / denominator
 
 

@@ -1,5 +1,41 @@
 import numpy as np
 import scipy.special
+from scipy import constants
+
+
+def decay_rates(n_max, eps1, eps2, omega, a, d, orientation):
+    n = np.ndarray(1, n_max + 1)
+    k1 = np.sqrt(eps1) * omega / constants.c
+    k2 = np.sqrt(eps2) * omega / constants.c
+    an, bn = mie_coefficients(n, k1*a, k2*a, eps1, eps2)
+    kd = k1*d
+    jn = scipy.special.spherical_jn(n, kd)
+    hn = spherical_hankel(n, kd, jn)
+    if orientation == 'radial':
+        return decay_rates_radial(n_max, bn, jn, hn, kd)
+    elif orientation == 'tangential':
+        return decay_rates_tangential(n_max, n, an, bn, jn, hn, kd)
+    elif orientation == 'averaged':
+        gamma_tot_radial, gamma_r_radial = decay_rates_radial(n_max, bn, jn, hn, kd)
+        gamma_tot_tangential, gamma_r_tangential = decay_rates_tangential(n_max, n, an, bn, jn, hn, kd)
+        gamma_tot = (gamma_tot_radial + 2.0*gamma_tot_tangential) / 3.0
+        gamma_r = (gamma_r_radial + 2.0*gamma_r_tangential) / 3.0
+        return (gamma_tot, gamma_r)
+
+
+def decay_rates_radial(n_max, bn, jn, hn, kd):
+    gamma_tot = total_decay_rate_radial(n_max, bn, hn, kd)
+    gamma_r = radiative_decay_rate_radial(n_max, bn, jn, hn, kd)
+    return (gamma_tot, gamma_r)
+
+
+def decay_rates_tangential(n_max, n, an, bn, jn, hn, kd):
+    jnprime = scipy.special.spherical_jn(n, kd, derivative=True)
+    psinprime = psi_n_prime(kd, jn, jnprime)
+    zetanprime = zeta_n_prime(n, kd, jnprime, hn)
+    gamma_tot = total_decay_rate_tangential(n_max, an, bn, zetanprime, hn, kd)
+    gamma_r = radiative_decay_rate_tangential(n_max, an, bn, jn, hn, psinprime, zetanprime, kd)
+    return (gamma_tot, gamma_r)
 
 
 def total_decay_rate_radial(n_max, bn, hn, kd):
@@ -30,8 +66,7 @@ def nonradiative_decay_rate(gamma_tot, gamma_r):
     return gamma_tot - gamma_r
 
 
-def mie_coefficients(n_max, rho1, rho2, eps1, eps2):
-    n = np.ndarray(1, n_max + 1)
+def mie_coefficients(n, rho1, rho2, eps1, eps2):
     jn1 = scipy.special.spherical_jn(n, rho1)
     jn2 = scipy.special.spherical_jn(n, rho2)
     jnprime1 = scipy.special.spherical_jn(n, rho1, derivative=True)

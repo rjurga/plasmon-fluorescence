@@ -3,6 +3,15 @@ import scipy.special
 from scipy import constants
 
 
+def decay_rates_vectorized(n_max, eps1, eps2, omega, a, d, orientation):
+    gamma_tot = np.empty(omega.shape)
+    gamma_r = np.empty(omega.shape)
+    for i in range(omega.size):
+        (gamma_tot[i], gamma_r[i]) = decay_rates(n_max, eps1[i], eps2, omega[i], a, d, orientation)
+    gamma_nr = nonradiative_decay_rate(gamma_tot, gamma_r)
+    return (gamma_tot, gamma_r, gamma_nr)
+
+
 def decay_rates(n_max, eps1, eps2, omega, a, d, orientation):
     n = range(1, n_max + 1)
     k1 = np.sqrt(eps1) * omega / constants.c

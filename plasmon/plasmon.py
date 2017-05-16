@@ -75,6 +75,11 @@ def nonradiative_decay_rate(gamma_tot, gamma_r):
     return gamma_tot - gamma_r
 
 
+def quantum_efficiency(gamma_tot, gamma_r, q_0):
+    gamma_int_0 = 1.0/q_0 - 1.0
+    q = gamma_r / (gamma_tot + gamma_int_0)
+    return q
+
 def mie_coefficients(n, rho1, rho2, eps1, eps2):
     jn1 = scipy.special.spherical_jn(n, rho1)
     jn2 = scipy.special.spherical_jn(n, rho2)

@@ -4,7 +4,7 @@ from scipy import constants
 
 
 def decay_rates(n_max, eps1, eps2, omega, a, d, orientation):
-    n = np.ndarray(1, n_max + 1)
+    n = range(1, n_max + 1)
     k1 = np.sqrt(eps1) * omega / constants.c
     k2 = np.sqrt(eps2) * omega / constants.c
     an, bn = mie_coefficients(n, k1*a, k2*a, eps1, eps2)

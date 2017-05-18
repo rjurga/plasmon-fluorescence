@@ -48,25 +48,25 @@ def decay_rates_tangential(n, an, bn, jn, hn, kd):
 
 
 def total_decay_rate_radial(n, bn, hn, kd):
-    terms = np.array((i * (i+1) * (2*i + 1) for i in n))
+    terms = np.array([i * (i+1) * (2*i + 1) for i in n])
     terms = terms * bn * np.square(hn/kd)
     return 1.0 + 1.5*np.real(np.sum(terms))
 
 
 def total_decay_rate_tangential(n, an, bn, zetanprime, hn, kd):
-    terms = np.array((i + 0.5 for i in n))
+    terms = np.array([i + 0.5 for i in n])
     terms = terms * (bn*np.square(zetanprime/kd) + an*np.square(hn))
     return 1.0 + 1.5*np.real(np.sum(terms))
 
 
 def radiative_decay_rate_radial(n, bn, jn, hn, kd):
-    terms = np.array((i * (i+1) * (2*i + 1) for i in n))
+    terms = np.array([i * (i+1) * (2*i + 1) for i in n])
     terms = terms * np.square((jn+bn*hn)/kd)
     return 1.5 * np.real(np.sum(terms))
 
 
 def radiative_decay_rate_tangential(n_max, an, bn, jn, hn, psinprime, zetanprime, kd):
-    terms = np.array((2*i + 1 for i in n))
+    terms = np.array([2*i + 1 for i in n])
     terms = terms * (np.square(jn+an*hn) + np.square((psinprime+bn*zetanprime)/kd))
     return 0.75 * np.real(np.sum(terms))
 

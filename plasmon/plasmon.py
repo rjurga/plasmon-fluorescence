@@ -65,7 +65,7 @@ def radiative_decay_rate_radial(n, bn, jn, hn, kd):
     return 1.5 * np.real(np.sum(terms))
 
 
-def radiative_decay_rate_tangential(n_max, an, bn, jn, hn, psinprime, zetanprime, kd):
+def radiative_decay_rate_tangential(n, an, bn, jn, hn, psinprime, zetanprime, kd):
     terms = np.array([2*i + 1 for i in n])
     terms = terms * (np.square(jn+an*hn) + np.square((psinprime+bn*zetanprime)/kd))
     return 0.75 * np.real(np.sum(terms))

@@ -10,7 +10,7 @@ def processing(save, show, n_max,
                x_min, x_max, x_n, x_label,
                eps_medium, metal, hbar_omega_p, hbar_gamma):
     x = np.linspace(x_min, x_max, x_n)
-    omega = x_to_omega(x, x_label)
+    omega = convert_x_to_omega(x, x_label)
     eps_metal = permittivity(omega, metal, hbar_omega_p, hbar_gamma)
     (gamma_tot, gamma_r, gamma_nr) = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, a, d, orientation)
     q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)

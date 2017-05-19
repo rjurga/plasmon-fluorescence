@@ -22,13 +22,13 @@ def processing(save, show, n_max,
                     (q, 'q', 'linear'))
 
 
-def x_to_omega(x, x_label):
+def convert_x_to_omega(x, x_label):
     if x_label == 'omega':
         return x
     elif x_label == 'hbar omega (J)':
         return x / constants.hbar
     elif x_label == 'hbar omega (eV)':
-        return eV_to_rad(x)
+        return convert_eV_to_Hz(x)
     elif x_label == 'frequency (Hz)':
         return 2.0 * constants.pi * x
     elif x_label == 'wavelength (m)':
@@ -42,13 +42,13 @@ def x_to_omega(x, x_label):
 def permittivity(omega, metal, hbar_omega_p, hbar_gamma):
     eps = np.nan
     if metal == 'Drude':
-        omega_p = eV_to_rad(hbar_omega_p)
-        gamma = eV_to_rad(hbar_gamma)
+        omega_p = convert_eV_to_Hz(hbar_omega_p)
+        gamma = convert_eV_to_Hz(hbar_gamma)
         eps = 1.0 - (omega_p**2.0)/(omega*(omega + 1j*gamma))
     return eps
 
 
-def eV_to_rad(x_eV):
+def convert_eV_to_Hz(x_eV):
     return x_eV / constants.hbar * constants.eV
 
 

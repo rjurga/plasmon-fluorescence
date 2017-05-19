@@ -17,7 +17,7 @@ def decay_rates(n_max, eps1, eps2, omega, a, d, orientation):
     k1 = np.sqrt(eps1) * omega / constants.c
     k2 = np.sqrt(eps2) * omega / constants.c
     an, bn = mie_coefficients(n, k1*a, k2*a, eps1, eps2)
-    kd = k1*d
+    kd = k1*(a+d)
     jn = scipy.special.spherical_jn(n, kd)
     hn = spherical_hankel(n, kd, jn)
     if orientation == 'radial':

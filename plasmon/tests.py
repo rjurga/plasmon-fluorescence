@@ -40,6 +40,6 @@ def test_mie():
     bn = computations.mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1)
     assert np.isclose(np.real(bn), -0.00140178)
     assert np.isclose(np.imag(bn), 0.00149810)
-    return 'tests pass'
+    return 'Mie tests pass'
 
 print(test_mie())

@@ -73,6 +73,6 @@ def make_figure(x, x_label, *args):
 
 
 processing(save, show, n_max,
-           a, d, orientation, q_0,
+           r, d, orientation, q_0,
            x_min, x_max, x_n, x_label,
            eps_medium, metal, hbar_omega_p, hbar_gamma)

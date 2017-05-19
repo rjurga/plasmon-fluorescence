@@ -3,71 +3,71 @@ import scipy.special
 from scipy import constants
 
 
-def decay_rates_vectorized(n_max, eps1, eps2, omega, a, d, orientation):
+def decay_rates_vectorized(n_max, eps1, eps2, omega, r, d, orientation):
     gamma_tot = np.empty(omega.shape)
     gamma_r = np.empty(omega.shape)
     for i in range(omega.size):
-        (gamma_tot[i], gamma_r[i]) = decay_rates(n_max, eps1, eps2[i], omega[i], a, d, orientation)
+        (gamma_tot[i], gamma_r[i]) = decay_rates(n_max, eps1, eps2[i], omega[i], r, d, orientation)
     gamma_nr = nonradiative_decay_rate(gamma_tot, gamma_r)
     return (gamma_tot, gamma_r, gamma_nr)
 
 
-def decay_rates(n_max, eps1, eps2, omega, a, d, orientation):
+def decay_rates(n_max, eps1, eps2, omega, r, d, orientation):
     n = range(1, n_max + 1)
     k1 = np.sqrt(eps1) * omega / constants.c
     k2 = np.sqrt(eps2) * omega / constants.c
-    an, bn = mie_coefficients(n, k1*a, k2*a, eps1, eps2)
-    kd = k1*(a+d)
-    jn = scipy.special.spherical_jn(n, kd)
-    hn = spherical_hankel(n, kd, jn)
+    an, bn = mie_coefficients(n, k1*r, k2*r, eps1, eps2)
+    y1 = k1 * (r+d)
+    jn = scipy.special.spherical_jn(n, y1)
+    hn = spherical_hankel(n, y1, jn)
     if orientation == 'radial':
-        return decay_rates_radial(n, bn, jn, hn, kd)
+        return decay_rates_radial(n, bn, jn, hn, y1)
     elif orientation == 'tangential':
-        return decay_rates_tangential(n, an, bn, jn, hn, kd)
+        return decay_rates_tangential(n, an, bn, jn, hn, y1)
     elif orientation == 'averaged':
-        gamma_tot_radial, gamma_r_radial = decay_rates_radial(n, bn, jn, hn, kd)
-        gamma_tot_tangential, gamma_r_tangential = decay_rates_tangential(n, an, bn, jn, hn, kd)
+        gamma_tot_radial, gamma_r_radial = decay_rates_radial(n, bn, jn, hn, y1)
+        gamma_tot_tangential, gamma_r_tangential = decay_rates_tangential(n, an, bn, jn, hn, y1)
         gamma_tot = (gamma_tot_radial + 2.0*gamma_tot_tangential) / 3.0
         gamma_r = (gamma_r_radial + 2.0*gamma_r_tangential) / 3.0
         return (gamma_tot, gamma_r)
 
 
-def decay_rates_radial(n, bn, jn, hn, kd):
-    gamma_tot = total_decay_rate_radial(n, bn, hn, kd)
-    gamma_r = radiative_decay_rate_radial(n, bn, jn, hn, kd)
+def decay_rates_radial(n, bn, jn, hn, y1):
+    gamma_tot = total_decay_rate_radial(n, bn, hn, y1)
+    gamma_r = radiative_decay_rate_radial(n, bn, jn, hn, y1)
     return (gamma_tot, gamma_r)
 
 
-def decay_rates_tangential(n, an, bn, jn, hn, kd):
-    jnprime = scipy.special.spherical_jn(n, kd, derivative=True)
-    psinprime = psi_n_prime(kd, jn, jnprime)
-    zetanprime = zeta_n_prime(n, kd, jnprime, hn)
-    gamma_tot = total_decay_rate_tangential(n, an, bn, zetanprime, hn, kd)
-    gamma_r = radiative_decay_rate_tangential(n, an, bn, jn, hn, psinprime, zetanprime, kd)
+def decay_rates_tangential(n, an, bn, jn, hn, y1):
+    jnprime = scipy.special.spherical_jn(n, y1, derivative=True)
+    psinprime = psi_n_prime(y1, jn, jnprime)
+    zetanprime = zeta_n_prime(n, y1, jnprime, hn)
+    gamma_tot = total_decay_rate_tangential(n, an, bn, zetanprime, hn, y1)
+    gamma_r = radiative_decay_rate_tangential(n, an, bn, jn, hn, psinprime, zetanprime, y1)
     return (gamma_tot, gamma_r)
 
 
-def total_decay_rate_radial(n, bn, hn, kd):
+def total_decay_rate_radial(n, bn, hn, y1):
     terms = np.array([i * (i+1) * (2*i + 1) for i in n])
-    terms = terms * bn * np.square(hn/kd)
+    terms = terms * bn * np.square(hn/y1)
     return 1.0 + 1.5*np.real(np.sum(terms))
 
 
-def total_decay_rate_tangential(n, an, bn, zetanprime, hn, kd):
+def total_decay_rate_tangential(n, an, bn, zetanprime, hn, y1):
     terms = np.array([i + 0.5 for i in n])
-    terms = terms * (bn*np.square(zetanprime/kd) + an*np.square(hn))
+    terms = terms * (bn*np.square(zetanprime/y1) + an*np.square(hn))
     return 1.0 + 1.5*np.real(np.sum(terms))
 
 
-def radiative_decay_rate_radial(n, bn, jn, hn, kd):
+def radiative_decay_rate_radial(n, bn, jn, hn, y1):
     terms = np.array([i * (i+1) * (2*i + 1) for i in n])
-    terms = terms * np.square((jn+bn*hn)/kd)
+    terms = terms * np.square((jn+bn*hn)/y1)
     return 1.5 * np.real(np.sum(terms))
 
 
-def radiative_decay_rate_tangential(n, an, bn, jn, hn, psinprime, zetanprime, kd):
+def radiative_decay_rate_tangential(n, an, bn, jn, hn, psinprime, zetanprime, y1):
     terms = np.array([2*i + 1 for i in n])
-    terms = terms * (np.square(jn+an*hn) + np.square((psinprime+bn*zetanprime)/kd))
+    terms = terms * (np.square(jn+an*hn) + np.square((psinprime+bn*zetanprime)/y1))
     return 0.75 * np.real(np.sum(terms))
 
 

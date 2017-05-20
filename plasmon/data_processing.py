@@ -21,15 +21,7 @@ def processing(save, show, n_max,
     gamma_tot, gamma_r, gamma_nr = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
     q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)
     if save:
-        distance_grid, emission_grid = np.meshgrid(distance, emission)
-        X = map(np.ravel, (distance_grid, emission_grid, gamma_tot, gamma_r, gamma_nr, q))
-        columns = ('distance (' + distance_unit + ')',
-                   emission_label,
-                   'normalized total decay rate',
-                   'normalized radiative decay rate',
-                   'normalized nonradiative decay rate',
-                   'quantum efficiency')
-        np.savetxt('results.txt', np.stack(X, axis=1), header=', '.join(columns))
+        save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q)
     if show:
         make_plot(distance, distance_n, distance_unit,
                   emission, emission_n, emission_label,
@@ -76,6 +68,18 @@ def permittivity(omega, metal, hbar_omega_p, hbar_gamma):
 
 def convert_eV_to_Hz(x_eV):
     return x_eV / constants.hbar * constants.eV
+
+
+def save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q):
+    distance_grid, emission_grid = np.meshgrid(distance, emission)
+    X = map(np.ravel, (distance_grid, emission_grid, gamma_tot, gamma_r, gamma_nr, q))
+    columns = ('distance (' + distance_unit + ')',
+                emission_label,
+                'normalized total decay rate',
+                'normalized radiative decay rate',
+                'normalized nonradiative decay rate',
+                'quantum efficiency')
+    np.savetxt('results.txt', np.stack(X, axis=1), header=', '.join(columns))
 
 
 def make_plot(distance, distance_n, distance_unit,

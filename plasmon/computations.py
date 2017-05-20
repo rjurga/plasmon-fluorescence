@@ -11,7 +11,7 @@ def decay_rates_vectorized(n_max, eps1, eps2, omega, r, d, orientation):
     for i in range(omega.size):
         an, bn = mie_coefficients(n_max, k1[i]*r, k2[i]*r, eps1, eps2[i])
         for j in range(d.size):
-            (gamma_tot[i, j], gamma_r[i, j]) = decay_rates(n_max, an, bn, k1[i], r, d[j], orientation)
+            gamma_tot[i, j], gamma_r[i, j] = decay_rates(n_max, an, bn, k1[i], r, d[j], orientation)
     gamma_nr = nonradiative_decay_rate(gamma_tot, gamma_r)
     return (gamma_tot, gamma_r, gamma_nr)
 

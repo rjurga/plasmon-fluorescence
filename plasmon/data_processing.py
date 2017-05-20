@@ -64,13 +64,17 @@ def make_figure(x, x_label, *args):
               'gamma_r': r'$\gamma_\mathrm{r} / \gamma_0$',
               'gamma_nr': r'$\gamma_\mathrm{nr} / \gamma_0$',
               'q': r'$q$'}
+    plt.figure(figsize=(15, 3))
     for (i, (y, y_label, y_scale)) in enumerate(args, start=1):
         plt.subplot(1, len(args), i)
         plt.plot(x, y)
         plt.xlabel(labels[x_label])
+        plt.xlim(x[0], x[-1])
         plt.ylabel(labels[y_label])
         plt.yscale(y_scale)
+    plt.tight_layout()
     plt.show()
+    plt.close()
 
 
 processing(save, show, n_max,

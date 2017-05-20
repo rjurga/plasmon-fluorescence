@@ -5,6 +5,9 @@ from scipy import constants
 import computations
 
 def test_mie():
+    """Tests the functions involved in the Mie coefficients computation
+    against values obtained with Wolfram Alpha.
+    """
     n = 1
     a = 10e-9
     omega = 2.48 / constants.hbar * constants.eV

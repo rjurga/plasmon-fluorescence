@@ -4,19 +4,20 @@ from scipy import constants
 
 
 def decay_rates_vectorized(n_max, eps1, eps2, omega, r, d, orientation):
-    gamma_tot = np.empty(omega.shape)
-    gamma_r = np.empty(omega.shape)
+    gamma_tot = np.empty((omega.size, d.size))
+    gamma_r = np.empty((omega.size, d.size))
+    k1 = np.sqrt(eps1) * omega / constants.c
+    k2 = np.sqrt(eps2) * omega / constants.c
     for i in range(omega.size):
-        (gamma_tot[i], gamma_r[i]) = decay_rates(n_max, eps1, eps2[i], omega[i], r, d, orientation)
+        an, bn = mie_coefficients(n_max, k1[i]*r, k2[i]*r, eps1, eps2[i])
+        for j in range(d.size):
+            (gamma_tot[i, j], gamma_r[i, j]) = decay_rates(n_max, an, bn, k1[i], r, d[j], orientation)
     gamma_nr = nonradiative_decay_rate(gamma_tot, gamma_r)
     return (gamma_tot, gamma_r, gamma_nr)
 
 
-def decay_rates(n_max, eps1, eps2, omega, r, d, orientation):
+def decay_rates(n_max, an, bn, k1, r, d, orientation):
     n = range(1, n_max + 1)
-    k1 = np.sqrt(eps1) * omega / constants.c
-    k2 = np.sqrt(eps2) * omega / constants.c
-    an, bn = mie_coefficients(n, k1*r, k2*r, eps1, eps2)
     y1 = k1 * (r+d)
     jn = scipy.special.spherical_jn(n, y1)
     hn = spherical_hankel(n, y1, jn)
@@ -80,7 +81,8 @@ def quantum_efficiency(gamma_tot, gamma_r, q_0):
     q = gamma_r / (gamma_tot + gamma_int_0)
     return q
 
-def mie_coefficients(n, rho1, rho2, eps1, eps2):
+def mie_coefficients(n_max, rho1, rho2, eps1, eps2):
+    n = range(1, n_max + 1)
     jn1 = scipy.special.spherical_jn(n, rho1)
     jn2 = scipy.special.spherical_jn(n, rho2)
     jnprime1 = scipy.special.spherical_jn(n, rho1, derivative=True)

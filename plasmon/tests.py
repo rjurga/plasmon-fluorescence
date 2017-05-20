@@ -5,7 +5,7 @@ from scipy import constants
 import computations
 
 def test_mie():
-    """Tests the functions involved in the Mie coefficients computation
+    """Test the functions involved in the Mie coefficients computation
     against values obtained with Wolfram Alpha.
     """
     n = 1

@@ -18,7 +18,7 @@ def decay_rates_vectorized(n_max, eps1, eps2, omega, r, d, orientation):
 def decay_rates(n_max, an, bn, k1, r, d, orientation):
     n = range(1, n_max + 1)
     y1 = k1 * (r+d)
-    jn = scipy.special.spherical_jn(n, y1)
+    jn = scipy.special.spherical_jn(n, y1).astype(np.clongdouble)
     hn = spherical_hankel(n, y1, jn)
     if orientation == 'radial':
         return decay_rates_radial(n, bn, jn, hn, y1)
@@ -39,7 +39,7 @@ def decay_rates_radial(n, bn, jn, hn, y1):
 
 
 def decay_rates_tangential(n, an, bn, jn, hn, y1):
-    jnprime = scipy.special.spherical_jn(n, y1, derivative=True)
+    jnprime = scipy.special.spherical_jn(n, y1, derivative=True).astype(np.clongdouble)
     psinprime = psi_n_prime(y1, jn, jnprime)
     zetanprime = zeta_n_prime(n, y1, jnprime, hn)
     gamma_tot = total_decay_rate_tangential(n, an, bn, zetanprime, hn, y1)
@@ -82,10 +82,10 @@ def quantum_efficiency(gamma_tot, gamma_r, q_0):
 
 def mie_coefficients(n_max, rho1, rho2, eps1, eps2):
     n = range(1, n_max + 1)
-    jn1 = scipy.special.spherical_jn(n, rho1)
-    jn2 = scipy.special.spherical_jn(n, rho2)
-    jnprime1 = scipy.special.spherical_jn(n, rho1, derivative=True)
-    jnprime2 = scipy.special.spherical_jn(n, rho2, derivative=True)
+    jn1 = scipy.special.spherical_jn(n, rho1).astype(np.clongdouble)
+    jn2 = scipy.special.spherical_jn(n, rho2).astype(np.clongdouble)
+    jnprime1 = scipy.special.spherical_jn(n, rho1, derivative=True).astype(np.clongdouble)
+    jnprime2 = scipy.special.spherical_jn(n, rho2, derivative=True).astype(np.clongdouble)
     hn1 = spherical_hankel(n, rho1, jn1)
     psinprime1 = psi_n_prime(rho1, jn1, jnprime1)
     psinprime2 = psi_n_prime(rho2, jn2, jnprime2)
@@ -102,7 +102,7 @@ def mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1):
 
 
 def spherical_hankel(n, z, jn, derivative=False):
-    yn = scipy.special.spherical_yn(n, z, derivative=derivative)
+    yn = scipy.special.spherical_yn(n, z, derivative=derivative).astype(np.clongdouble)
     return jn + 1j*yn
 
 

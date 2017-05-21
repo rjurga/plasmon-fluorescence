@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The environment of a quantum optical emitter can strongly affect its emission properties[[1](https://doi.org/10.1103/PhysRev.69.674)]. In particular, plasmonic environments can result in important enhancement or quenching[[2](https://doi.org/10.1103/PhysRevLett.96.113002)]. In the case of a dipole near a metal sphere, exact expressions for the decay rates are available from the electrodynamical theory[[3](https://doi.org/10.1016/0039-6028(88)90776-5)]. This program is a numerical implementation of these expressions.
+The environment of a quantum optical emitter can strongly affect its emission properties[[1](https://doi.org/10.1103/PhysRev.69.674)]. In particular, plasmonic environments can result in important enhancement or quenching[[2](https://doi.org/10.1103/PhysRevLett.96.113002)]. In the case of a dipole near a metal sphere, exact expressions for the decay rates are available from the electrodynamical theory[[3](https://doi.org/10.1016/0039-6028(88)90776-5)]. This software is a numerical implementation of these expressions.
 
 ## Features
 

@@ -28,6 +28,24 @@ def processing(save, show, n_max,
                   gamma_tot, gamma_r, gamma_nr, q)
 
 
+def convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
+                radius, radius_unit, orientation, q_0,
+                distance_min, distance_unit, emission_min, emission_label):
+    r = convert_units(radius, radius_unit)
+    d = convert_units(np.array([distance_min]), distance_unit)
+    omega = convert_emission_to_omega(np.array([emission_min]), emission_label)
+    eps_metal = permittivity(omega, metal, hbar_omega_p, hbar_gamma)
+    gamma_tot = np.empty(n_max)
+    gamma_r = np.empty(n_max)
+    for i, n in enumerate(range(1, n_max+1)):
+        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, eps_medium, eps_metal, omega, r, d, orientation)
+    plot_params = (
+        (gamma_tot, r'$\gamma_\mathrm{sp} / \gamma_0$', 'linear'),
+        (gamma_r, r'$\gamma_\mathrm{r} / \gamma_0$', 'linear'),
+        )
+    make_1d_plot(range(1, n_max+1), r'$n_\mathrm{max}$', plot_params, style='.')
+
+
 def convert_units(x, x_unit):
     factors = {'m': 1e0,
                'cm': 1e-2,
@@ -85,7 +103,6 @@ def save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q):
 def make_plot(distance, distance_n, distance_unit,
               emission, emission_n, emission_label,
               gamma_tot, gamma_r, gamma_nr, q):
-    plt.figure(figsize=(15, 3))
     labels = {'omega': r'$\omega$',
               'hbar omega (J)': r'$\hbar \omega$',
               'hbar omega (eV)': r'$\hbar \omega$ (eV)',
@@ -97,40 +114,55 @@ def make_plot(distance, distance_n, distance_unit,
               'gamma_nr': r'$\gamma_\mathrm{nr} / \gamma_0$',
               'q': r'$q$'}
     plot_params = (
-        (gamma_tot, 'gamma_sp', 'log'),
-        (gamma_r, 'gamma_r', 'log'),
-        (gamma_nr, 'gamma_nr', 'log'),
-        (q, 'q', 'linear')
+        (gamma_tot, labels['gamma_sp'], 'log'),
+        (gamma_r, labels['gamma_r'], 'log'),
+        (gamma_nr, labels['gamma_nr'], 'log'),
+        (q, labels['q'], 'linear')
         )
     if distance_n > 1 and emission_n > 1:
-        X, Y = np.meshgrid(distance, emission)
-        for i, (Z, Z_label, Z_scale) in enumerate(plot_params, start=1):
-            if Z_scale == 'log':
-                Z_norm = LogNorm(vmin=Z.min(), vmax=Z.max())
-            else:
-                Z_norm=None
-            plt.subplot(1, len(plot_params), i)
-            plt.imshow(Z, aspect='auto', interpolation='bilinear',
-                       norm=Z_norm, origin='lower',
-                       extent=[X.min(), X.max(), Y.min(), Y.max()])
-            plt.xlabel('distance (' + distance_unit + ')')
-            plt.ylabel(labels[emission_label])
-            plt.title(labels[Z_label])
-            plt.colorbar()
+        x_label = 'distance (' + distance_unit + ')'
+        y_label = labels[emission_label]
+        make_2d_plot(distance, x_label, emission, y_label, plot_params)
     else:
         if emission_n == 1:
             x = distance
             x_label = 'distance (' + distance_unit + ')'
         else:
             x = emission
-            x_label = emission_label
-        for i, (y, y_label, y_scale) in enumerate(plot_params, start=1):
-            plt.subplot(1, len(plot_params), i)
-            plt.plot(x, np.ravel(y))
-            plt.xlabel(labels.get(x_label, x_label))
-            plt.xlim(x[0], x[-1])
-            plt.ylabel(labels.get(y_label, y_label))
-            plt.yscale(y_scale)
+            x_label = labels[emission_label]
+        make_1d_plot(x, x_label, plot_params)
+
+
+def make_2d_plot(x, x_label, y, y_label, plot_params):
+    plt.figure(figsize=(4*len(plot_params), 3))
+    X, Y = np.meshgrid(x, y)
+    for i, (Z, Z_label, Z_scale) in enumerate(plot_params, start=1):
+        if Z_scale == 'log':
+            Z_norm = LogNorm(vmin=Z.min(), vmax=Z.max())
+        else:
+            Z_norm=None
+        plt.subplot(1, len(plot_params), i)
+        plt.imshow(Z, aspect='auto', interpolation='bilinear',
+                    norm=Z_norm, origin='lower',
+                    extent=[X.min(), X.max(), Y.min(), Y.max()])
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.title(Z_label)
+        plt.colorbar()
+    plt.tight_layout()
+    plt.show()
+    plt.close()
+
+
+def make_1d_plot(x, x_label, plot_params, style='-'):
+    plt.figure(figsize=(4*len(plot_params), 3))
+    for i, (y, y_label, y_scale) in enumerate(plot_params, start=1):
+        plt.subplot(1, len(plot_params), i)
+        plt.plot(x, np.ravel(y), style)
+        plt.xlabel(x_label)
+        plt.xlim(x[0], x[-1])
+        plt.ylabel(y_label)
+        plt.yscale(y_scale)
     plt.tight_layout()
     plt.show()
     plt.close()
@@ -138,8 +170,13 @@ def make_plot(distance, distance_n, distance_unit,
 
 if __name__ == "__main__":
     from parameters import *
-    processing(save, show, n_max,
-            eps_medium, metal, hbar_omega_p, hbar_gamma,
-            radius, radius_unit, orientation, q_0,
-            distance_min, distance_max, distance_n, distance_unit,
-            emission_min, emission_max, emission_n, emission_label)
+    if save or show:
+        processing(save, show, n_max,
+                eps_medium, metal, hbar_omega_p, hbar_gamma,
+                radius, radius_unit, orientation, q_0,
+                distance_min, distance_max, distance_n, distance_unit,
+                emission_min, emission_max, emission_n, emission_label)
+    if show_convergence:
+        convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
+                    radius, radius_unit, orientation, q_0,
+                    distance_min, distance_unit, emission_min, emission_label)

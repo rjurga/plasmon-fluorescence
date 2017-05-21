@@ -11,6 +11,7 @@ def processing(save, show, n_max,
                radius, radius_unit, orientation, q_0,
                distance_min, distance_max, distance_n, distance_unit,
                emission_min, emission_max, emission_n, emission_label):
+    """Convert parameters, get decay rates, save and plot results."""
     r = convert_units(radius, radius_unit)
     distance = np.linspace(distance_min, distance_max, num=distance_n)
     d = convert_units(distance, distance_unit)
@@ -31,6 +32,7 @@ def processing(save, show, n_max,
 def convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
                 radius, radius_unit, orientation, q_0,
                 distance_min, distance_unit, emission_min, emission_label):
+    """Plot decay rates as a function of the max angular mode order."""
     r = convert_units(radius, radius_unit)
     d = convert_units(np.array([distance_min]), distance_unit)
     omega = convert_emission_to_omega(np.array([emission_min]), emission_label)
@@ -47,6 +49,7 @@ def convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
 
 
 def convert_units(x, x_unit):
+    """Return length converted to metres."""
     factors = {'m': 1e0,
                'cm': 1e-2,
                'mm': 1e-3,
@@ -57,6 +60,7 @@ def convert_units(x, x_unit):
 
 
 def convert_emission_to_omega(x, x_label):
+    """Convert emission parameter to radian per second and return omega."""
     if x_label == 'omega':
         result = x
     elif x_label == 'hbar omega (J)':
@@ -75,6 +79,7 @@ def convert_emission_to_omega(x, x_label):
 
 
 def permittivity(omega, metal, hbar_omega_p, hbar_gamma):
+    """Return the permittivity at omega for the specified metal."""
     if metal == 'Drude':
         omega_p = convert_eV_to_Hz(hbar_omega_p)
         gamma = convert_eV_to_Hz(hbar_gamma)
@@ -85,10 +90,12 @@ def permittivity(omega, metal, hbar_omega_p, hbar_gamma):
 
 
 def convert_eV_to_Hz(x_eV):
+    """Return input converted from eV to Hz."""
     return x_eV / constants.hbar * constants.eV
 
 
 def save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q):
+    """Save the decay rates and quantum efficiency in results.txt."""
     distance_grid, emission_grid = np.meshgrid(distance, emission)
     X = map(np.ravel, (distance_grid, emission_grid, gamma_tot, gamma_r, gamma_nr, q))
     columns = ('distance (' + distance_unit + ')',
@@ -103,6 +110,7 @@ def save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q):
 def make_plot(distance, distance_n, distance_unit,
               emission, emission_n, emission_label,
               gamma_tot, gamma_r, gamma_nr, q):
+    """Plot the decay rates and quantum efficiency."""
     labels = {'omega': r'$\omega$',
               'hbar omega (J)': r'$\hbar \omega$',
               'hbar omega (eV)': r'$\hbar \omega$ (eV)',
@@ -134,6 +142,7 @@ def make_plot(distance, distance_n, distance_unit,
 
 
 def make_2d_plot(x, x_label, y, y_label, plot_params):
+    """Make a 2d map plot of the decay rates and quantum efficiency."""
     plt.figure(figsize=(4*len(plot_params), 3))
     X, Y = np.meshgrid(x, y)
     for i, (Z, Z_label, Z_scale) in enumerate(plot_params, start=1):
@@ -155,6 +164,7 @@ def make_2d_plot(x, x_label, y, y_label, plot_params):
 
 
 def make_1d_plot(x, x_label, plot_params, style='-'):
+    """Make a 1d plot of the decay rates and quantum efficiency."""
     plt.figure(figsize=(4*len(plot_params), 3))
     for i, (y, y_label, y_scale) in enumerate(plot_params, start=1):
         plt.subplot(1, len(plot_params), i)

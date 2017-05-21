@@ -21,8 +21,10 @@ Currently only the Drude model for the description of the metal is implemented. 
 ## References
 
 [[1](https://doi.org/10.1103/PhysRev.69.674)] E. M. Purcell, Spontaneous Emission Probabilities at Radio Frequencies, Phys. Rev. **69**, 674 – Published 1 June 1946.
+
 [[2](https://doi.org/10.1103/PhysRevLett.96.113002)] Pascal Anger, Palash Bharadwaj, and Lukas Novotny, Enhancement and Quenching of Single-Molecule Fluorescence, Phys. Rev. Lett. **96**, 113002 – Published 21 March 2006.
-[[3](https://doi.org/10.1016/0039-6028(88)90776-5)] Young Sik Kim, P.T. Leung, Thomas F. George, Classical decay rates for molecules in the presence of a spherical surface: A complete treatment, Surface Science, Volume 195, Issue 1, 1988, Pages 1-14, ISSN 0039-6028, http://dx.doi.org/10.1016/0039-6028(88)90776-5.
+
+[[3](https://doi.org/10.1016/0039-6028(88)90776-5)] Young Sik Kim, P.T. Leung, Thomas F. George, Classical decay rates for molecules in the presence of a spherical surface: A complete treatment, Surface Science, Volume 195, Issue 1, 1988, Pages 1-14, ISSN 0039-6028.
 
 # Installation and usage
 

@@ -46,4 +46,5 @@ def test_mie():
     assert np.isclose(np.imag(bn), 0.00149810)
     return 'Tests pass: Mie'
 
-print(test_mie())
+if __name__ == "__main__":
+    print(test_mie())

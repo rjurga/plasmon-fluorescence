@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
 import computations
-from parameters import *
 
 
 def processing(save, show, n_max,
@@ -137,8 +136,10 @@ def make_plot(distance, distance_n, distance_unit,
     plt.close()
 
 
-processing(save, show, n_max,
-           eps_medium, metal, hbar_omega_p, hbar_gamma,
-           radius, radius_unit, orientation, q_0,
-           distance_min, distance_max, distance_n, distance_unit,
-           emission_min, emission_max, emission_n, emission_label)
+if __name__ == "__main__":
+    from parameters import *
+    processing(save, show, n_max,
+            eps_medium, metal, hbar_omega_p, hbar_gamma,
+            radius, radius_unit, orientation, q_0,
+            distance_min, distance_max, distance_n, distance_unit,
+            emission_min, emission_max, emission_n, emission_label)

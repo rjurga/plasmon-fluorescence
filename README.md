@@ -16,7 +16,7 @@ A high number (> 100) of angular modes are required for convergence of the norma
 
 ## Metals
 
-Currently only the Drude model for the description of the metal is implemented. Experimental permittivity data from scientific publications are subject to licenses that may prevent distribution with this software. However additional permittivities can be easily implemented by the user in the data_processing.permittivity function.
+Currently only the Drude model for the description of the metal is implemented. Experimental permittivity data from scientific publications are subject to licenses that may prevent distribution with this software. However additional permittivities can be easily implemented by the user in the `data_processing.permittivity` function.
 
 ## References
 
@@ -35,7 +35,7 @@ Download or clone the repository through the GitHub webpage or with your git cli
 ## Usage
 
 The file `parameters.py` contains all the parameters that the user can change and their descriptions. Then run the `data_processing.py` script with the following command:
-```python data_processing.py```
+```python data_processing.py```.
 
 ## Requirements
 
@@ -54,7 +54,7 @@ If you wish to improve this software, you can:
 - Request features through GitHub.
 - Fork the repository to implement changes and create a pull request.
 
-Although the goals of the software are narrow and well-defined, features and pull requests that fit in this scope will be considered.
+Although the goals of this software are narrow and well-defined, features and pull requests that fit in this scope will be considered.
 
 # License
 

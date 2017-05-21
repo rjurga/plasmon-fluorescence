@@ -1,4 +1,4 @@
-# Plasmonic modification of the decay rates of a dipole near a metal sphere
+# Decay rates of a dipole near a metal sphere
 
 ## Introduction
 

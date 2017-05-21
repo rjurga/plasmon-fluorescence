@@ -18,7 +18,8 @@ def processing(save, show, n_max,
     emission = np.linspace(emission_min, emission_max, num=emission_n)
     omega = convert_emission_to_omega(emission, emission_label)
     eps_metal = permittivity(omega, metal, hbar_omega_p, hbar_gamma)
-    gamma_tot, gamma_r, gamma_nr = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    gamma_nr = computations.nonradiative_decay_rate(gamma_tot, gamma_r)
     q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)
     if save:
         save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q)

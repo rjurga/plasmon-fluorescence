@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The environment of a quantum optical emitter can strongly affect its emission properties[[1](https://doi.org/10.1103/PhysRev.69.674)]. In particular, plasmonic environments can result in important enhancement or quenching[[2](https://doi.org/10.1103/PhysRevLett.96.113002)]. In the case of a dipole near a metal sphere, exact expressions for the decay rates are available from the electrodynamical theory[[3](https://doi.org/10.1016/0039-6028(88)90776-5)]. This software is a numerical implementation of these expressions.
+The environment of a quantum optical emitter can strongly affect its emission properties<sup>[[1](https://doi.org/10.1103/PhysRev.69.674)]</sup>. In particular, plasmonic environments can result in an important enhancement or quenching<sup>[[2](https://doi.org/10.1103/PhysRevLett.96.113002)]</sup>. In the case of a dipole near a metal sphere, exact expressions for the decay rates are available from the electrodynamical theory<sup>[[3](https://doi.org/10.1016/0039-6028(88)90776-5)]</sup>. This software is a numerical implementation of these expressions.
 
 ## Features
 
@@ -12,7 +12,7 @@ The expressions of the normalized total and radiative decay rates are sums over 
 
 ## Convergence
 
-A high number (> 100) of angular modes are required for convergence of the normalized total decay rate when the dipole is close (~ 1 nm) to the surface of the metal sphere. However the numerical evaluation of the expressions may fail if the angular modes are too high. To allow reaching higher angular modes, numerical values of the Spherical Bessel functions are converted to NumPy's clongdouble type. Please read [NumPy's documentation](https://docs.scipy.org/doc/numpy/user/basics.types.html#extended-precision) for further information about compatibility with your hardware.
+A high number (> 100) of angular modes are required for convergence of the normalized total decay rate when the dipole is close (~ 1 nm) to the surface of the metal sphere. However the numerical evaluation of the expressions may fail if the angular modes orders are too high. To allow reaching higher angular modes orders, numerical values of the Spherical Bessel functions are converted to NumPy's clongdouble type. Please read [NumPy's documentation](https://docs.scipy.org/doc/numpy/user/basics.types.html#extended-precision) for further information about compatibility with your hardware.
 
 ## Metals
 

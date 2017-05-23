@@ -18,6 +18,12 @@ A high number (> 100) of angular modes are required for convergence of the norma
 
 Currently only the Drude model for the description of the metal is implemented. Experimental permittivity data from scientific publications are subject to licenses that may prevent distribution with this software. However additional permittivities can be easily implemented by the user in the `data_processing.permittivity` function.
 
+## Validation
+
+The software is validated through several tests in the `tests.py` file. The tests include:
+- Comparison of Mie coefficients and special functions with numerical values from Wolfram Alpha.
+- Comparison of normalized total and radiative decay rates with results of finite element method computations. With a maximum angular mode number of 111, the relative difference in the performed tests is bounded from above by 3%. This worst case is achieved when the dipole is as close as 1 nm from the surface of the metal sphere.
+
 ## References
 
 [[1](https://doi.org/10.1103/PhysRev.69.674)] E. M. Purcell, Spontaneous Emission Probabilities at Radio Frequencies, Phys. Rev. **69**, 674 – Published 1 June 1946.

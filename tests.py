@@ -3,6 +3,7 @@ import scipy.special
 from scipy import constants
 
 import computations
+import data_processing
 
 
 def test_mie():
@@ -49,5 +50,95 @@ def test_mie():
     return 'Tests pass: Mie'
 
 
+def test_decay_rates():
+    """Test the functions involved in the decay rates computation.
+
+    Compare to values obtained with finite element methods.
+    """
+    r = data_processing.convert_units(30, 'nm')
+    metal = 'Drude'
+    hbar_omega_p = 8.1
+    hbar_gamma = constants.hbar / (14.0e-15 * constants.eV)
+    n_max = 111
+    test_fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max)
+    test_fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max)
+    test_fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max)
+    return 'Tests pass: FEM comparison'
+
+
+def test_fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
+    """Compare decay rates with FEM calculations.
+    
+    The comparison is for a varying emission frequency in air.
+    Only the relative difference is evaluated.
+    """
+    d = data_processing.convert_units(np.array([5]), 'nm')
+    emission = np.linspace(1.0, 4.0, num=10)
+    omega = data_processing.convert_emission_to_omega(emission, 'hbar omega (eV)')
+    eps_medium = 1.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    orientation = 'radial'
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_01.txt', skiprows=10)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
+    orientation = 'tangential'
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_02.txt', skiprows=10)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-2)
+    return 'Tests pass: FEM comparison for changing emission parameter in air'
+
+
+def test_fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max):
+    """Compare decay rates with FEM calculations.
+    
+    The comparison is for a varying emission frequency in a dielectric medium.
+    Only the relative difference is evaluated.
+    """
+    d = data_processing.convert_units(np.array([5]), 'nm')
+    emission = np.linspace(1.0, 4.0, num=10)
+    omega = data_processing.convert_emission_to_omega(emission, 'hbar omega (eV)')
+    eps_medium = 2.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    orientation = 'radial'
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_03.txt', skiprows=10)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
+    orientation = 'tangential'
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_04.txt', skiprows=10)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=2.0e-2)
+    return 'Tests pass: FEM comparison for changing emission parameter in dielectric'
+
+
+def test_fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
+    """Compare decay rates with FEM calculations.
+    
+    The comparison is for a varying distance frequency in air.
+    Only the relative difference is evaluated.
+    """
+    distance = np.linspace(1.0, 10.0, num=10)
+    d = data_processing.convert_units(distance, 'nm')
+    emission = 2.5
+    omega = data_processing.convert_emission_to_omega(np.array([emission]), 'hbar omega (eV)')
+    eps_medium = 1.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    orientation = 'radial'
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_05.txt', skiprows=10)
+    assert np.allclose(d, fem_data[:, 0])
+    assert np.allclose(gamma_tot, fem_data[:, 1], atol=0.0, rtol=3.0e-2)
+    orientation = 'tangential'
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_06.txt', skiprows=10)
+    assert np.allclose(d, fem_data[:, 0])
+    assert np.allclose(gamma_tot, fem_data[:, 1], atol=0.0, rtol=3.0e-2)
+    return 'Tests pass: FEM comparison for changing distance in air'
+
+
 if __name__ == "__main__":
     print(test_mie())
+    print(test_decay_rates())

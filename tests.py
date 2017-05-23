@@ -4,6 +4,7 @@ from scipy import constants
 
 import computations
 
+
 def test_mie():
     """Test the functions involved in the Mie coefficients computation.
 
@@ -46,6 +47,7 @@ def test_mie():
     assert np.isclose(np.real(bn), -0.00140178)
     assert np.isclose(np.imag(bn), 0.00149810)
     return 'Tests pass: Mie'
+
 
 if __name__ == "__main__":
     print(test_mie())

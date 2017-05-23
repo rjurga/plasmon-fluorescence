@@ -22,7 +22,7 @@ Currently only the Drude model for the description of the metal is implemented. 
 
 The software is validated through several tests in the `tests.py` file. The tests include:
 - Comparison of Mie coefficients and special functions with numerical values from Wolfram Alpha.
-- Comparison of normalized total and radiative decay rates with results of finite element method computations. With a maximum angular mode number of 111, the relative difference in the performed tests is bounded above by 3%. This worst case is achieved when the dipole is as close as 1 nm from the surface of the metal sphere.
+- Comparison of normalized total and radiative decay rates with results of finite element method computations. With a maximum angular mode number of 111, the relative difference in the performed tests is bounded from above by 3%. This worst case is achieved when the dipole is as close as 1 nm from the surface of the metal sphere.
 
 ## References
 

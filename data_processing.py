@@ -17,7 +17,7 @@ def processing(save, show, n_max,
     d = convert_units(distance, distance_unit)
     emission = np.linspace(emission_min, emission_max, num=emission_n)
     omega = convert_emission_to_omega(emission, emission_label)
-    eps_metal = permittivity(omega, metal, hbar_omega_p, hbar_gamma)
+    eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, eps_medium, eps_metal, omega, r, d, orientation)
     gamma_nr = computations.nonradiative_decay_rate(gamma_tot, gamma_r)
     q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)
@@ -36,7 +36,7 @@ def convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
     r = convert_units(radius, radius_unit)
     d = convert_units(np.array([distance_min]), distance_unit)
     omega = convert_emission_to_omega(np.array([emission_min]), emission_label)
-    eps_metal = permittivity(omega, metal, hbar_omega_p, hbar_gamma)
+    eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     gamma_tot = np.empty(n_max)
     gamma_r = np.empty(n_max)
     for i, n in enumerate(range(1, n_max+1)):
@@ -78,12 +78,12 @@ def convert_emission_to_omega(x, x_label):
     return result
 
 
-def permittivity(omega, metal, hbar_omega_p, hbar_gamma):
+def permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma):
     """Return the permittivity at omega for the specified metal."""
     if metal == 'Drude':
         omega_p = convert_eV_to_Hz(hbar_omega_p)
         gamma = convert_eV_to_Hz(hbar_gamma)
-        eps = 1.0 - (omega_p**2.0)/(omega*(omega + 1j*gamma))
+        eps = eps_medium - (omega_p**2.0)/(omega*(omega + 1j*gamma))
     else:
         eps = np.nan
     return eps

@@ -50,19 +50,27 @@ def test_mie():
     return 'Tests pass: Mie'
 
 
-def finite_element_method_tests():
+def test_decay_rates():
+    """Test the functions involved in the decay rates computation.
+
+    Compare to values obtained with finite element methods.
+    """
     r = data_processing.convert_units(30, 'nm')
     metal = 'Drude'
     hbar_omega_p = 8.1
     hbar_gamma = constants.hbar / (14.0e-15 * constants.eV)
     n_max = 111
-    fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max)
-    fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max)
-    fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max)
+    test_fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max)
+    test_fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max)
+    test_fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max)
     return 'Tests pass: FEM comparison'
 
 
-def fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
+def test_fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
+    """Compare decay rates with FEM calculations.
+    
+    The comparison is for a varying emission frequency in air.
+    """
     d = data_processing.convert_units(np.array([5]), 'nm')
     emission = np.linspace(1.0, 4.0, num=10)
     omega = data_processing.convert_emission_to_omega(emission, 'hbar omega (eV)')
@@ -81,7 +89,11 @@ def fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
     return 'Tests pass: FEM comparison for changing emission parameter in air'
 
 
-def fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max):
+def test_fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max):
+    """Compare decay rates with FEM calculations.
+    
+    The comparison is for a varying emission frequency in a dielectric medium.
+    """
     d = data_processing.convert_units(np.array([5]), 'nm')
     emission = np.linspace(1.0, 4.0, num=10)
     omega = data_processing.convert_emission_to_omega(emission, 'hbar omega (eV)')
@@ -100,7 +112,11 @@ def fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max):
     return 'Tests pass: FEM comparison for changing emission parameter in dielectric'
 
 
-def fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
+def test_fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
+    """Compare decay rates with FEM calculations.
+    
+    The comparison is for a varying distance frequency in air.
+    """
     distance = np.linspace(1.0, 10.0, num=10)
     d = data_processing.convert_units(distance, 'nm')
     emission = 2.5
@@ -122,4 +138,4 @@ def fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
 
 if __name__ == "__main__":
     print(test_mie())
-    print(finite_element_method_tests())
+    print(test_decay_rates())

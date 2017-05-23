@@ -70,6 +70,7 @@ def test_fem_emission_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
     """Compare decay rates with FEM calculations.
     
     The comparison is for a varying emission frequency in air.
+    Only the relative difference is evaluated.
     """
     d = data_processing.convert_units(np.array([5]), 'nm')
     emission = np.linspace(1.0, 4.0, num=10)
@@ -93,6 +94,7 @@ def test_fem_emission_dielectric(r, metal, hbar_omega_p, hbar_gamma, n_max):
     """Compare decay rates with FEM calculations.
     
     The comparison is for a varying emission frequency in a dielectric medium.
+    Only the relative difference is evaluated.
     """
     d = data_processing.convert_units(np.array([5]), 'nm')
     emission = np.linspace(1.0, 4.0, num=10)
@@ -116,6 +118,7 @@ def test_fem_distance_air(r, metal, hbar_omega_p, hbar_gamma, n_max):
     """Compare decay rates with FEM calculations.
     
     The comparison is for a varying distance frequency in air.
+    Only the relative difference is evaluated.
     """
     distance = np.linspace(1.0, 10.0, num=10)
     d = data_processing.convert_units(distance, 'nm')

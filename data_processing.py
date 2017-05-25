@@ -85,9 +85,9 @@ def permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma):
         gamma = convert_eV_to_Hz(hbar_gamma)
         eps = eps_medium - (omega_p**2.0)/(omega*(omega + 1j*gamma))
     elif (('Olmon' in metal) and ('gold' in metal)) or (metal == 'Yang silver'):
-        params = {'Olmon evaporated gold': ('Metals/Olmon_PRB2012_EV.dat', '\t', 2),
-                  'Olmon template-stripped gold': ('Metals/Olmon_PRB2012_TS.dat', '\t', 2),
-                  'Olmon single-crystal gold': ('Metals/Olmon_PRB2012_SC.dat', '\t', 2),
+        params = {'Olmon evaporated gold': ('Metals/Olmon_PRB2012_EV.dat', None, 2),
+                  'Olmon template-stripped gold': ('Metals/Olmon_PRB2012_TS.dat', None, 2),
+                  'Olmon single-crystal gold': ('Metals/Olmon_PRB2012_SC.dat', None, 2),
                   'Yang silver': ('Metals/Ag_C_corrected.csv', ',', 1)}
         fname, d, s = params[metal]
         data = np.loadtxt(fname, delimiter=d, skiprows=s, usecols=(0,2,3))

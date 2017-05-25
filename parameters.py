@@ -23,7 +23,6 @@ metal = 'Drude'
 # metal = 'Olmon single-crystal gold'
 # metal = 'Yang silver'
 
-
 # Plasma frequency in eV.
 # Only used if the metal is described with Drude.
 hbar_omega_p = 8.1

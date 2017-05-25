@@ -16,8 +16,13 @@ n_max = 111
 eps_medium = 1.0
 
 # Material of the metal sphere.
-# Valid values: 'Drude'.
+# Only one of the options below should be uncommented.
 metal = 'Drude'
+# metal = 'Olmon evaporated gold'
+# metal = 'Olmon template-stripped gold'
+# metal = 'Olmon single-crystal gold'
+# metal = 'Yang silver'
+
 
 # Plasma frequency in eV.
 # Only used if the metal is described with Drude.

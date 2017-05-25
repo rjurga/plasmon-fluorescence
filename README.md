@@ -16,7 +16,16 @@ A high number (> 100) of angular modes are required for convergence of the norma
 
 ## Metals
 
-Currently only the Drude model for the description of the metal is implemented. Experimental permittivity data from scientific publications are subject to licenses that may prevent distribution with this software. However additional permittivities can be easily implemented by the user in the `data_processing.permittivity` function.
+Metals are described through their dielectric functions. The following ones are implemented:
+- The Drude model.
+- Evaporated gold as measured by Olmon *et al*.\*<sup>[[4](https://doi.org/10.1103/PhysRevB.86.235147)]</sup>
+- Template-stripped gold as measured by Olmon *et al*.\*<sup>[[4](https://doi.org/10.1103/PhysRevB.86.235147)]</sup>
+- Single-crystal gold as measured by Olmon *et al*.\*<sup>[[4](https://doi.org/10.1103/PhysRevB.86.235147)]</sup>
+- Silver as measured by Yang *et al*.\*<sup>[[5](https://doi.org/10.1103/PhysRevB.91.235137)]</sup>
+
+Additional dielectric functions can be easily implemented by the user in the `data_processing.permittivity` function by imitating the provided implementations.
+
+\* The files containing the data of the dielectric functions are not provided. The user is required to obtain them from the linked references and place them in the `Metals` directory.
 
 ## Validation
 
@@ -31,6 +40,10 @@ The software is validated through several tests in the `tests.py` file. The test
 [[2](https://doi.org/10.1103/PhysRevLett.96.113002)] Pascal Anger, Palash Bharadwaj, and Lukas Novotny, Enhancement and Quenching of Single-Molecule Fluorescence, Phys. Rev. Lett. **96**, 113002 – Published 21 March 2006.
 
 [[3](https://doi.org/10.1016/0039-6028(88)90776-5)] Young Sik Kim, P.T. Leung, Thomas F. George, Classical decay rates for molecules in the presence of a spherical surface: A complete treatment, Surface Science, Volume 195, Issue 1, 1988, Pages 1-14, ISSN 0039-6028.
+
+[[4](https://doi.org/10.1103/PhysRevB.86.235147)] Robert L. Olmon, Brian Slovick, Timothy W. Johnson, David Shelton, Sang-Hyun Oh, Glenn D. Boreman, and Markus B. Raschke, Optical dielectric function of gold, Phys. Rev. B **86**, 235147 – Published 28 December 2012.
+
+[[5](https://doi.org/10.1103/PhysRevB.91.235137)] Honghua U. Yang, Jeffrey D'Archangel, Michael L. Sundheimer, Eric Tucker, Glenn D. Boreman, and Markus B. Raschke, Optical dielectric function of silver, Phys. Rev. B **91**, 235137 – Published 22 June 2015.
 
 # Installation and usage
 

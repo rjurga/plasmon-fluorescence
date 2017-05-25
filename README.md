@@ -22,6 +22,7 @@ Metals are described through their dielectric functions. The following ones are 
 - Template-stripped gold as measured by Olmon *et al*.\*<sup>[[4](https://doi.org/10.1103/PhysRevB.86.235147)]</sup>
 - Single-crystal gold as measured by Olmon *et al*.\*<sup>[[4](https://doi.org/10.1103/PhysRevB.86.235147)]</sup>
 - Silver as measured by Yang *et al*.\*<sup>[[5](https://doi.org/10.1103/PhysRevB.91.235137)]</sup>
+
 Additional dielectric functions can be easily implemented by the user in the `data_processing.permittivity` function by imitating the provided implementations.
 
 \* The files containing the data of the dielectric functions are not provided. The user is required to obtain them from the linked references and place them in the `Metals` directory.

@@ -137,3 +137,7 @@ def zeta_n_prime(n, z, jnprime, hn):
     """Return the derivative of zeta."""
     hnprime = spherical_hankel(n, z, jnprime, derivative=True)
     return hn + z*hnprime
+
+def delta_n(n, eps2, eps_inf, jn2, jn2_nl, psinprime2_nl):
+    """Return the nonlocal correction delta."""
+    return n * (n+1) * jn2 * (eps2-eps_inf) / eps_inf * jn2_nl / psinprime2_nl

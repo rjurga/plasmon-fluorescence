@@ -23,13 +23,22 @@ metal = 'Drude'
 # metal = 'Olmon single-crystal gold'
 # metal = 'Yang silver'
 
+# Whether to enable nonlocality.
+nonlocal = False
+
 # Plasma frequency in eV.
-# Only used if the metal is described with Drude.
 hbar_omega_p = 8.1
 
 # Damping rate in eV.
-# Only used if the metal is described with Drude.
 hbar_gamma = 0.047
+
+# Fermi velocity in metres per second.
+# Only used if the nonlocality is enabled.
+v_F = 1.40e6
+
+# Diffusion constant in metres squared per second.
+# Only used if the nonlocality is enabled.
+D = 8.62e-4
 
 
 # Radius of the metal sphere.

@@ -12,12 +12,21 @@ def decay_rates_vectorized(n_max, nonlocal, eps1, eps2, eps_inf, omega_p, xi, om
     gamma_r = np.empty((omega.size, d.size))
     k1 = np.sqrt(eps1) * omega / constants.c
     k2 = np.sqrt(eps2) * omega / constants.c
-    k2_nl = omega_p / xi * np.square(eps2 / eps_inf / (eps_inf-eps2)) if nonlocal else np.empty(omega.size) * np.nan
+    k2_nl = k_longitudinal(nonlocal, eps2, eps_inf, omega_p, xi)
     for i in range(omega.size):
         an, bn = mie_coefficients(n_max, nonlocal, k1[i]*r, k2[i]*r, k2_nl[i]*r, eps1, eps2[i], eps_inf[i])
         for j in range(d.size):
             gamma_tot[i, j], gamma_r[i, j] = decay_rates(n_max, an, bn, k1[i], r, d[j], orientation)
     return (gamma_tot, gamma_r)
+
+
+def k_longitudinal(nonlocal, eps, eps_inf, omega_p, xi):
+    """Return the longitudinal wavevector due to the nonlocal response."""
+    if nonlocal:
+        k_nl = omega_p / xi * np.square(eps / eps_inf / (eps_inf-eps))
+    else:
+        k_nl = np.empty(eps.size) * np.nan
+    return k_nl
 
 
 def decay_rates(n_max, an, bn, k1, r, d, orientation):

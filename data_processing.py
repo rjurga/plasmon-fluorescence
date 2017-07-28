@@ -21,8 +21,7 @@ def processing(save, show, n_max,
     eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     eps_inf = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     omega_p = convert_eV_to_Hz(hbar_omega_p)
-    xi = np.sqrt(3.0/5.0*np.square(v_F) - 1j*omega*D)
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, xi, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
     gamma_nr = computations.nonradiative_decay_rate(gamma_tot, gamma_r)
     q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)
     if save:
@@ -42,11 +41,11 @@ def convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
     omega = convert_emission_to_omega(np.array([emission_min]), emission_label)
     eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     eps_inf = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
-    xi = np.sqrt(3.0/5.0*np.square(v_F) - 1j*omega*D)
+    omega_p = convert_eV_to_Hz(hbar_omega_p)
     gamma_tot = np.empty(n_max)
     gamma_r = np.empty(n_max)
     for i, n in enumerate(range(1, n_max+1)):
-        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, xi, omega, r, d, orientation)
+        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
     plot_params = (
         (gamma_tot, r'$\gamma_\mathrm{sp} / \gamma_0$', 'linear'),
         (gamma_r, r'$\gamma_\mathrm{r} / \gamma_0$', 'linear'),
@@ -147,9 +146,9 @@ def make_plot(distance, distance_n, distance_unit,
               'gamma_nr': r'$\gamma_\mathrm{nr} / \gamma_0$',
               'q': r'$q$'}
     plot_params = (
-        (gamma_tot, labels['gamma_sp'], 'log'),
-        (gamma_r, labels['gamma_r'], 'log'),
-        (gamma_nr, labels['gamma_nr'], 'log'),
+        (gamma_tot, labels['gamma_sp'], 'linear'),# 'log'),
+        (gamma_r, labels['gamma_r'], 'linear'),# 'log'),
+        (gamma_nr, labels['gamma_nr'], 'linear'),# 'log'),
         (q, labels['q'], 'linear')
         )
     if distance_n > 1 and emission_n > 1:

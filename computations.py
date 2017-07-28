@@ -14,7 +14,7 @@ def decay_rates_vectorized(n_max, nonlocal, eps1, eps2, eps_inf, omega_p, xi, om
     k2 = np.sqrt(eps2) * omega / constants.c
     k2_nl = omega_p / xi * np.square(eps2 / eps_inf / (eps_inf-eps2)) if nonlocal else np.empty(omega.size) * np.nan
     for i in range(omega.size):
-        an, bn = mie_coefficients(n_max, nonlocal, k1[i]*r, k2[i]*r, k2_nl[i]*r, eps1, eps2[i], eps_inf)
+        an, bn = mie_coefficients(n_max, nonlocal, k1[i]*r, k2[i]*r, k2_nl[i]*r, eps1, eps2[i], eps_inf[i])
         for j in range(d.size):
             gamma_tot[i, j], gamma_r[i, j] = decay_rates(n_max, an, bn, k1[i], r, d[j], orientation)
     return (gamma_tot, gamma_r)
@@ -142,6 +142,7 @@ def zeta_n_prime(n, z, jnprime, hn):
 
 def delta_n(n, rho2_nl, eps2, eps_inf, jn2):
     """Return the nonlocal correction delta."""
+    n = np.array(n)
     jn2_nl = scipy.special.spherical_jn(n, rho2_nl).astype(np.clongdouble)
     jnprime2_nl = scipy.special.spherical_jn(n, rho2_nl, derivative=True).astype(np.clongdouble)
     psinprime2_nl = psi_n_prime(rho2_nl, jn2_nl, jnprime2_nl)

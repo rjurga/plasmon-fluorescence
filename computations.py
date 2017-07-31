@@ -24,7 +24,7 @@ def k_longitudinal(nonlocal, eps, eps_inf, omega_p, gamma, v_F, D, omega):
     """Return the longitudinal wavevector due to the nonlocal response."""
     if nonlocal:
         xi = np.sqrt(3.0/5.0*np.square(v_F) + D*(gamma - 1j*omega))
-        k_nl = omega_p / xi * np.square(eps / eps_inf / (eps_inf-eps))
+        k_nl = omega_p / xi * np.sqrt(eps / (eps_inf * (eps_inf-eps)))
     else:
         k_nl = np.empty(omega.size) * np.nan
     return k_nl

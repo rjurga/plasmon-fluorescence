@@ -155,5 +155,4 @@ def delta_n(n, rho2_nl, eps2, eps_inf, jn2):
     n = np.array(n)
     jn2_nl = scipy.special.spherical_jn(n, rho2_nl).astype(np.clongdouble)
     jnprime2_nl = scipy.special.spherical_jn(n, rho2_nl, derivative=True).astype(np.clongdouble)
-    psinprime2_nl = psi_n_prime(rho2_nl, jn2_nl, jnprime2_nl)
-    return n * (n+1) * jn2 * (eps2-eps_inf) / eps_inf * jn2_nl / psinprime2_nl
+    return n * (n+1) * jn2 * (eps2-eps_inf) / eps_inf * jn2_nl / (rho2_nl * jnprime2_nl)

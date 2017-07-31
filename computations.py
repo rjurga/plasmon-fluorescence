@@ -3,7 +3,7 @@ import scipy.special
 from scipy import constants
 
 
-def decay_rates_vectorized(n_max, nonlocal, eps1, eps2, eps_inf, omega_p, v_F, D, omega, r, d, orientation):
+def decay_rates_vectorized(n_max, nonlocal, eps1, eps2, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation):
     """Return the normalized total and radiative decay rates.
     
     This function is vectorized: it iterates over omega and d.
@@ -12,7 +12,7 @@ def decay_rates_vectorized(n_max, nonlocal, eps1, eps2, eps_inf, omega_p, v_F, D
     gamma_r = np.empty((omega.size, d.size))
     k1 = np.sqrt(eps1) * omega / constants.c
     k2 = np.sqrt(eps2) * omega / constants.c
-    k2_nl = k_longitudinal(nonlocal, eps2, eps_inf, omega_p, v_F, D, omega)
+    k2_nl = k_longitudinal(nonlocal, eps2, eps_inf, omega_p, gamma, v_F, D, omega)
     for i in range(omega.size):
         an, bn = mie_coefficients(n_max, nonlocal, k1[i]*r, k2[i]*r, k2_nl[i]*r, eps1, eps2[i], eps_inf[i])
         for j in range(d.size):
@@ -20,10 +20,10 @@ def decay_rates_vectorized(n_max, nonlocal, eps1, eps2, eps_inf, omega_p, v_F, D
     return (gamma_tot, gamma_r)
 
 
-def k_longitudinal(nonlocal, eps, eps_inf, omega_p, v_F, D, omega):
+def k_longitudinal(nonlocal, eps, eps_inf, omega_p, gamma, v_F, D, omega):
     """Return the longitudinal wavevector due to the nonlocal response."""
     if nonlocal:
-        xi = np.sqrt(3.0/5.0*np.square(v_F) - 1j*omega*D)
+        xi = np.sqrt(3.0/5.0*np.square(v_F) + D*(gamma - 1j*omega))
         k_nl = omega_p / xi * np.square(eps / eps_inf / (eps_inf-eps))
     else:
         k_nl = np.empty(omega.size) * np.nan

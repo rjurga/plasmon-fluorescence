@@ -21,7 +21,8 @@ def processing(save, show, n_max,
     eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     eps_inf = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     omega_p = convert_eV_to_Hz(hbar_omega_p)
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+    gamma = convert_eV_to_Hz(hbar_gamma)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     gamma_nr = computations.nonradiative_decay_rate(gamma_tot, gamma_r)
     q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)
     if save:
@@ -42,10 +43,11 @@ def convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
     eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     eps_inf = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     omega_p = convert_eV_to_Hz(hbar_omega_p)
+    gamma = convert_eV_to_Hz(hbar_gamma)
     gamma_tot = np.empty(n_max)
     gamma_r = np.empty(n_max)
     for i, n in enumerate(range(1, n_max+1)):
-        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     plot_params = (
         (gamma_tot, r'$\gamma_\mathrm{sp} / \gamma_0$', 'linear'),
         (gamma_r, r'$\gamma_\mathrm{r} / \gamma_0$', 'linear'),

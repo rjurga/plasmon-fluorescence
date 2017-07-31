@@ -47,7 +47,56 @@ def test_mie():
     bn = computations.mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1, 0.0)
     assert np.isclose(np.real(bn), -0.00140178)
     assert np.isclose(np.imag(bn), 0.00149810)
-    return 'Tests pass: Mie'
+    return 'Tests pass: Mie local'
+
+
+def test_mie_nonlocal():
+    """Test the functions involved in the nonlocal Mie coefficients computation.
+
+    Compare to values obtained with Wolfram Alpha.
+    """
+    n = 1
+    a = 10e-9
+    omega = 2.48 / constants.hbar * constants.eV
+    omega_p = 8.1 / constants.hbar * constants.eV
+    gamma = 0.047 / constants.hbar * constants.eV
+    v_F = 1.40e6
+    D = 8.62e-4
+    eps1 = 1.0
+    eps2 = -2.377 + 1j*2.856
+    eps_inf = 1.0
+    k1 = np.sqrt(eps1) * omega / constants.c
+    k2 = np.sqrt(eps2) * omega / constants.c
+    k2_nl = computations.k_longitudinal(True, eps2, eps_inf, omega_p, gamma, v_F, D, omega)
+    assert np.isclose(np.real(k2_nl), -2.98397e9, atol=0.0, rtol=1.0e-3)
+    assert np.isclose(np.imag(k2_nl), 5.25972e9, atol=0.0, rtol=1.0e-3)
+    rho1 = k1*a
+    rho2 = k2*a
+    rho2_nl = k2_nl*a
+    jn1 = scipy.special.spherical_jn(n, rho1)
+    jn2 = scipy.special.spherical_jn(n, rho2)
+    hn1 = computations.spherical_hankel(n, rho1, jn1)
+    jnprime1 = scipy.special.spherical_jn(n, rho1, derivative=True)
+    jnprime2 = scipy.special.spherical_jn(n, rho2, derivative=True)
+    psinprime1 = computations.psi_n_prime(rho1, jn1, jnprime1)
+    psinprime2 = computations.psi_n_prime(rho2, jn2, jnprime2)
+    zetanprime1 = computations.zeta_n_prime(n, rho1, jnprime1, hn1)
+    jn2_nl = scipy.special.spherical_jn(n, rho2_nl)
+    assert np.isclose(np.real(jn2_nl), 5.119867079e20)
+    assert np.isclose(np.imag(jn2_nl), -2.786558951e20)
+    jnprime2_nl = scipy.special.spherical_jn(n, rho2_nl, derivative=True)
+    assert np.isclose(np.real(jnprime2_nl), -2.7063597583597e20)
+    assert np.isclose(np.imag(jnprime2_nl), -5.0690425090715e20)
+    deltan = computations.delta_n(n, rho2_nl, eps2, eps_inf, jn2)
+    assert np.isclose(np.real(deltan), -0.0119636)
+    assert np.isclose(np.imag(deltan), 0.00117763)
+    an = computations.mie_bn(1.0, 1.0, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1, 0.0)
+    assert np.isclose(np.real(an), -1.96544240e-6)
+    assert np.isclose(np.imag(an), -2.34432221e-6)
+    bn = computations.mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1, 0.0)
+    assert np.isclose(np.real(bn), -0.00140178)
+    assert np.isclose(np.imag(bn), 0.00149810)
+    return 'Tests pass: Mie nonlocal'
 
 
 def test_decay_rates():
@@ -67,7 +116,7 @@ def test_decay_rates():
     test_fem_emission_air(r, metal, nonlocal, hbar_omega_p, omega_p, hbar_gamma, v_F, D, n_max)
     test_fem_emission_dielectric(r, metal, nonlocal, hbar_omega_p, omega_p, hbar_gamma, v_F, D, n_max)
     test_fem_distance_air(r, metal, nonlocal, hbar_omega_p, omega_p, hbar_gamma, v_F, D, n_max)
-    return 'Tests pass: FEM comparison'
+    return 'Tests pass: FEM local comparison'
 
 
 def test_fem_emission_air(r, metal, nonlocal, hbar_omega_p, omega_p, hbar_gamma, v_F, D, n_max):
@@ -79,16 +128,17 @@ def test_fem_emission_air(r, metal, nonlocal, hbar_omega_p, omega_p, hbar_gamma,
     d = data_processing.convert_units(np.array([5]), 'nm')
     emission = np.linspace(1.0, 4.0, num=10)
     omega = data_processing.convert_emission_to_omega(emission, 'hbar omega (eV)')
+    gamma = data_processing.convert_eV_to_Hz(hbar_gamma)
     eps_medium = 1.0
     eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     orientation = 'radial'
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     fem_data = np.loadtxt('Tests/FEM_01.txt', skiprows=10)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
     orientation = 'tangential'
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     fem_data = np.loadtxt('Tests/FEM_02.txt', skiprows=10)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-2)
@@ -104,16 +154,17 @@ def test_fem_emission_dielectric(r, metal, nonlocal, hbar_omega_p, omega_p, hbar
     d = data_processing.convert_units(np.array([5]), 'nm')
     emission = np.linspace(1.0, 4.0, num=10)
     omega = data_processing.convert_emission_to_omega(emission, 'hbar omega (eV)')
+    gamma = data_processing.convert_eV_to_Hz(hbar_gamma)
     eps_medium = 2.0
     eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     orientation = 'radial'
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     fem_data = np.loadtxt('Tests/FEM_03.txt', skiprows=10)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
     orientation = 'tangential'
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     fem_data = np.loadtxt('Tests/FEM_04.txt', skiprows=10)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=2.0e-2)
@@ -130,16 +181,17 @@ def test_fem_distance_air(r, metal, nonlocal, hbar_omega_p, omega_p, hbar_gamma,
     d = data_processing.convert_units(distance, 'nm')
     emission = 2.5
     omega = data_processing.convert_emission_to_omega(np.array([emission]), 'hbar omega (eV)')
+    gamma = data_processing.convert_eV_to_Hz(hbar_gamma)
     eps_medium = 1.0
     eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
     eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     orientation = 'radial'
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     fem_data = np.loadtxt('Tests/FEM_05.txt', skiprows=10)
     assert np.allclose(d, fem_data[:, 0])
     assert np.allclose(gamma_tot, fem_data[:, 1], atol=0.0, rtol=3.0e-2)
     orientation = 'tangential'
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, v_F, D, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
     fem_data = np.loadtxt('Tests/FEM_06.txt', skiprows=10)
     assert np.allclose(d, fem_data[:, 0])
     assert np.allclose(gamma_tot, fem_data[:, 1], atol=0.0, rtol=3.0e-2)
@@ -148,4 +200,5 @@ def test_fem_distance_air(r, metal, nonlocal, hbar_omega_p, omega_p, hbar_gamma,
 
 if __name__ == "__main__":
     print(test_mie())
+    print(test_mie_nonlocal())
     print(test_decay_rates())

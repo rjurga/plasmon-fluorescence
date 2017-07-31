@@ -7,6 +7,11 @@
 % sphere radius = 30 nm
 % d = 5 nm
 %
+% nonlocal = False
+%
+% v_F = 1.40e6 m/s
+% D = 0.0 m^2/s
+%
 % Hbar Omega (eV) Normalized Total Decay Rate Normalized Radiative Decay Rate
 1                        41.34146551411595        5.572001501054717
 1.3333333333333333       27.352112342732198       5.995199354083523

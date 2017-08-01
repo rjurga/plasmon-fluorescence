@@ -115,6 +115,8 @@ def test_decay_rates():
     test_fem_local_emission_dielectric(r, metal, hbar_omega_p, omega_p, hbar_gamma, gamma, n_max)
     test_fem_local_distance_air(r, metal, hbar_omega_p, omega_p, hbar_gamma, gamma, n_max)
     test_fem_nonlocal_emission_air(r, metal, hbar_omega_p, omega_p, hbar_gamma, gamma, n_max)
+    metal = 'Olmon single-crystal gold'
+    test_fem_emission_exp_eps(r, metal, hbar_omega_p, omega_p, hbar_gamma, gamma, n_max)
     return 'Tests pass: FEM comparison'
 
 
@@ -135,12 +137,12 @@ def test_fem_local_emission_air(r, metal, hbar_omega_p, omega_p, hbar_gamma, gam
     eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     orientation = 'radial'
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_01.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_01.txt', skiprows=17)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
     orientation = 'tangential'
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_02.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_02.txt', skiprows=17)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-2)
     return 'Tests pass: FEM comparison for changing emission parameter in air with local Drude metal'
@@ -164,12 +166,12 @@ def test_fem_local_emission_dielectric(r, metal, hbar_omega_p, omega_p, hbar_gam
     eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     orientation = 'radial'
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_03.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_03.txt', skiprows=17)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
     orientation = 'tangential'
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_04.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_04.txt', skiprows=17)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=2.0e-2)
     return 'Tests pass: FEM comparison for changing emission parameter in dielectric with local Drude metal'
@@ -194,12 +196,12 @@ def test_fem_local_distance_air(r, metal, hbar_omega_p, omega_p, hbar_gamma, gam
     eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     orientation = 'radial'
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_05.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_05.txt', skiprows=17)
     assert np.allclose(d, fem_data[:, 0])
     assert np.allclose(gamma_tot, fem_data[:, 1], atol=0.0, rtol=3.0e-2)
     orientation = 'tangential'
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_06.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_06.txt', skiprows=17)
     assert np.allclose(d, fem_data[:, 0])
     assert np.allclose(gamma_tot, fem_data[:, 1], atol=0.0, rtol=3.0e-2)
     return 'Tests pass: FEM comparison for changing distance in air with local Drude metal'
@@ -208,7 +210,7 @@ def test_fem_local_distance_air(r, metal, hbar_omega_p, omega_p, hbar_gamma, gam
 def test_fem_nonlocal_emission_air(r, metal, hbar_omega_p, omega_p, hbar_gamma, gamma, n_max):
     """Compare decay rates with FEM calculations.
     
-    The comparison is for a varying emission frequency in air.
+    The comparison is for a Drude metal with a nonlocal response.
     Only the relative difference is evaluated.
     """
     nonlocal = True
@@ -222,15 +224,77 @@ def test_fem_nonlocal_emission_air(r, metal, hbar_omega_p, omega_p, hbar_gamma, 
     eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     orientation = 'radial'
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_07.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_07.txt', skiprows=17)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=2.0e-2)
     D = 8.62e-4
     gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
-    fem_data = np.loadtxt('Tests/FEM_08.txt', skiprows=15)
+    fem_data = np.loadtxt('Tests/FEM_08.txt', skiprows=17)
     assert np.allclose(emission, fem_data[:, 0])
     assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-2)
     return 'Tests pass: FEM comparison for changing emission parameter in air with nonlocal Drude metal'
+
+
+def test_fem_emission_exp_eps(r, metal, hbar_omega_p, omega_p, hbar_gamma, gamma, n_max):
+    """Compare decay rates with FEM calculations.
+    
+    The comparison is for a metal with permittivity of gold given by Olmon.
+    Only the relative difference is evaluated.
+    """
+    emission = np.linspace(1.0, 4.0, num=10)
+    omega = data_processing.convert_emission_to_omega(emission, 'hbar omega (eV)')
+    orientation = 'radial'
+    d = data_processing.convert_units(np.array([5]), 'nm')
+    nonlocal = False
+    v_F = 0.0
+    D = 0.0
+    eps_medium = 1.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_09.txt', skiprows=17)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
+    eps_medium = 2.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_10.txt', skiprows=17)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
+    nonlocal = True
+    v_F = 1.40e6
+    D = 0.0
+    eps_medium = 1.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_11.txt', skiprows=17)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=2.0e-2)
+    eps_medium = 2.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_12.txt', skiprows=17)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=2.0e-2)
+    D = 8.62e-4
+    eps_medium = 1.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_13.txt', skiprows=17)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
+    eps_medium = 2.0
+    eps_metal = data_processing.permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
+    eps_inf = data_processing.bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    fem_data = np.loadtxt('Tests/FEM_14.txt', skiprows=17)
+    assert np.allclose(emission, fem_data[:, 0])
+    assert np.allclose(np.transpose(gamma_tot), fem_data[:, 1], atol=0.0, rtol=1.0e-3)
+    return 'Tests pass: FEM comparison for metal with permittivity of gold given by Olmon'
 
 
 if __name__ == "__main__":

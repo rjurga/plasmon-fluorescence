@@ -148,9 +148,9 @@ def make_plot(distance, distance_n, distance_unit,
               'gamma_nr': r'$\gamma_\mathrm{nr} / \gamma_0$',
               'q': r'$q$'}
     plot_params = (
-        (gamma_tot, labels['gamma_sp'], 'linear'),# 'log'),
-        (gamma_r, labels['gamma_r'], 'linear'),# 'log'),
-        (gamma_nr, labels['gamma_nr'], 'linear'),# 'log'),
+        (gamma_tot, labels['gamma_sp'], 'log'),
+        (gamma_r, labels['gamma_r'], 'log'),
+        (gamma_nr, labels['gamma_nr'], 'log'),
         (q, labels['q'], 'linear')
         )
     if distance_n > 1 and emission_n > 1:

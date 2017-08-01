@@ -1,5 +1,7 @@
 % radial dipole orientation
 %
+% metal = Drude
+%
 % hbar omegap = 8.1 eV
 % hbar gamma = hbar / (14 fs)
 %

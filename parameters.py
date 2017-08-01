@@ -24,7 +24,7 @@ metal = 'Drude'
 # metal = 'Yang silver'
 
 # Whether to enable nonlocality.
-nonlocal = False
+nonlocal = True
 
 # Plasma frequency in eV.
 hbar_omega_p = 8.1

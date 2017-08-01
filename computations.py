@@ -3,7 +3,7 @@ import scipy.special
 from scipy import constants
 
 
-def decay_rates_vectorized(n_max, eps1, eps2, omega, r, d, orientation):
+def decay_rates_vectorized(n_max, nonlocal, eps1, eps2, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation):
     """Return the normalized total and radiative decay rates.
     
     This function is vectorized: it iterates over omega and d.
@@ -12,11 +12,22 @@ def decay_rates_vectorized(n_max, eps1, eps2, omega, r, d, orientation):
     gamma_r = np.empty((omega.size, d.size))
     k1 = np.sqrt(eps1) * omega / constants.c
     k2 = np.sqrt(eps2) * omega / constants.c
+    k2_nl = k_longitudinal(nonlocal, eps2, eps_inf, omega_p, gamma, v_F, D, omega)
     for i in range(omega.size):
-        an, bn = mie_coefficients(n_max, k1[i]*r, k2[i]*r, eps1, eps2[i])
+        an, bn = mie_coefficients(n_max, nonlocal, k1[i]*r, k2[i]*r, k2_nl[i]*r, eps1, eps2[i], eps_inf[i])
         for j in range(d.size):
             gamma_tot[i, j], gamma_r[i, j] = decay_rates(n_max, an, bn, k1[i], r, d[j], orientation)
     return (gamma_tot, gamma_r)
+
+
+def k_longitudinal(nonlocal, eps, eps_inf, omega_p, gamma, v_F, D, omega):
+    """Return the longitudinal wavevector due to the nonlocal response."""
+    if nonlocal:
+        xi = np.sqrt(3.0/5.0*np.square(v_F) + D*(gamma - 1j*omega))
+        k_nl = omega_p / xi * np.sqrt(eps / (eps_inf * (eps_inf-eps)))
+    else:
+        k_nl = np.empty(omega.size) * np.nan
+    return k_nl
 
 
 def decay_rates(n_max, an, bn, k1, r, d, orientation):
@@ -99,7 +110,7 @@ def quantum_efficiency(gamma_tot, gamma_r, q_0):
     q = gamma_r / (gamma_tot + gamma_int_0)
     return q
 
-def mie_coefficients(n_max, rho1, rho2, eps1, eps2):
+def mie_coefficients(n_max, nonlocal, rho1, rho2, rho2_nl, eps1, eps2, eps_inf):
     """Return the a and b Mie coefficients."""
     n = range(1, n_max + 1)
     jn1 = scipy.special.spherical_jn(n, rho1).astype(np.clongdouble)
@@ -110,15 +121,16 @@ def mie_coefficients(n_max, rho1, rho2, eps1, eps2):
     psinprime1 = psi_n_prime(rho1, jn1, jnprime1)
     psinprime2 = psi_n_prime(rho2, jn2, jnprime2)
     zetanprime1 = zeta_n_prime(n, rho1, jnprime1, hn1)
-    an = mie_bn(1.0, 1.0, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1)
-    bn = mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1)
+    deltan = delta_n(n, rho2_nl, eps2, eps_inf, jn2) if nonlocal else 0.0
+    an = mie_bn(1.0, 1.0, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1, 0.0)
+    bn = mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1, deltan)
     return (an, bn)
 
 
-def mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1):
+def mie_bn(eps1, eps2, jn1, jn2, hn1, psinprime1, psinprime2, zetanprime1, deltan):
     """Return the b Mie coefficient."""
-    numerator = eps1*jn1*psinprime2 - eps2*jn2*psinprime1
-    denominator = eps2*jn2*zetanprime1 - eps1*hn1*psinprime2
+    numerator = eps1*jn1*(psinprime2+deltan) - eps2*jn2*psinprime1
+    denominator = eps2*jn2*zetanprime1 - eps1*hn1*(psinprime2+deltan)
     return numerator / denominator
 
 
@@ -137,3 +149,10 @@ def zeta_n_prime(n, z, jnprime, hn):
     """Return the derivative of zeta."""
     hnprime = spherical_hankel(n, z, jnprime, derivative=True)
     return hn + z*hnprime
+
+def delta_n(n, rho2_nl, eps2, eps_inf, jn2):
+    """Return the nonlocal correction delta."""
+    n = np.array(n)
+    jn2_nl = scipy.special.spherical_jn(n, rho2_nl).astype(np.clongdouble)
+    jnprime2_nl = scipy.special.spherical_jn(n, rho2_nl, derivative=True).astype(np.clongdouble)
+    return n * (n+1) * jn2 * (eps2-eps_inf) / eps_inf * jn2_nl / (rho2_nl * jnprime2_nl)

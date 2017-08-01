@@ -1,11 +1,18 @@
 % radial dipole orientation
 %
+% metal = Drude
+%
 % hbar omegap = 8.1 eV
 % hbar gamma = hbar / (14 fs)
 %
 % medium permittivity = 2
 % sphere radius = 30 nm
 % d = 5 nm
+%
+% nonlocal = False
+%
+% v_F = 1.40e6 m/s
+% D = 0.0 m^2/s
 %
 % Hbar Omega (eV) Normalized Total Decay Rate Normalized Radiative Decay Rate
 1                        33.4454860051738         6.127010742400387

@@ -17,6 +17,7 @@ eps_medium = 1.0
 
 # Material of the metal sphere.
 # Only one of the options below should be uncommented.
+# Data files for Olmon and Yang should be put in the Metals directory.
 metal = 'Drude'
 # metal = 'Olmon evaporated gold'
 # metal = 'Olmon template-stripped gold'
@@ -24,20 +25,24 @@ metal = 'Drude'
 # metal = 'Yang silver'
 
 # Whether to enable nonlocality.
+# Only used if nonlocality is enabled or if the metal is 'Drude'.
 nonlocal = True
 
 # Plasma frequency in eV.
+# Only used if nonlocality is enabled or if the metal is 'Drude'.
 hbar_omega_p = 8.1
 
 # Damping rate in eV.
 hbar_gamma = 0.047
 
 # Fermi velocity in metres per second.
-# Only used if the nonlocality is enabled.
+# Only used if nonlocality is enabled.
 v_F = 1.40e6
 
 # Diffusion constant in metres squared per second.
-# Only used if the nonlocality is enabled.
+# Only used if nonlocality is enabled.
+# Setting D to zero uses the Hydrodynamic Theory.
+# Setting D to a higher value uses the Generalized Nonlocal Optical Response.
 D = 8.62e-4
 
 

@@ -28,6 +28,10 @@ metal = 'Drude'
 # Only used if nonlocality is enabled or if the metal is 'Drude'.
 nonlocal = True
 
+# Permittivity contribution due to the bound response.
+# Only used if the metal is 'Drude'.
+eps_inf = 1.0
+
 # Plasma frequency in eV.
 # Only used if nonlocality is enabled or if the metal is 'Drude'.
 hbar_omega_p = 8.1

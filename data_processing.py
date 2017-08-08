@@ -8,7 +8,7 @@ import computations
 
 def processing(save, show, n_max,
                eps_medium, metal, nonlocal,
-               hbar_omega_p, hbar_gamma, v_F, D,
+               eps_inf, hbar_omega_p, hbar_gamma, v_F, D,
                radius, radius_unit, orientation, q_0,
                distance_min, distance_max, distance_n, distance_unit,
                emission_min, emission_max, emission_n, emission_label):
@@ -18,11 +18,11 @@ def processing(save, show, n_max,
     d = convert_units(distance, distance_unit)
     emission = np.linspace(emission_min, emission_max, num=emission_n)
     omega = convert_emission_to_omega(emission, emission_label)
-    eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
-    eps_inf = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    eps_metal = permittivity(omega, metal, eps_inf, hbar_omega_p, hbar_gamma)
+    eps_local = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     omega_p = convert_eV_to_Hz(hbar_omega_p)
     gamma = convert_eV_to_Hz(hbar_gamma)
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_local, omega_p, gamma, v_F, D, omega, r, d, orientation)
     gamma_nr = computations.nonradiative_decay_rate(gamma_tot, gamma_r)
     q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)
     if save:
@@ -33,21 +33,21 @@ def processing(save, show, n_max,
                   gamma_tot, gamma_r, gamma_nr, q)
 
 
-def convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
+def convergence(n_max, eps_medium, metal, eps_inf, hbar_omega_p, hbar_gamma,
                 radius, radius_unit, orientation, q_0,
                 distance_min, distance_unit, emission_min, emission_label):
     """Plot decay rates as a function of the max angular mode order."""
     r = convert_units(radius, radius_unit)
     d = convert_units(np.array([distance_min]), distance_unit)
     omega = convert_emission_to_omega(np.array([emission_min]), emission_label)
-    eps_metal = permittivity(omega, metal, eps_medium, hbar_omega_p, hbar_gamma)
-    eps_inf = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
+    eps_metal = permittivity(omega, metal, eps_inf, hbar_omega_p, hbar_gamma)
+    eps_local = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
     omega_p = convert_eV_to_Hz(hbar_omega_p)
     gamma = convert_eV_to_Hz(hbar_gamma)
     gamma_tot = np.empty(n_max)
     gamma_r = np.empty(n_max)
     for i, n in enumerate(range(1, n_max+1)):
-        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, nonlocal, eps_medium, eps_metal, eps_inf, omega_p, gamma, v_F, D, omega, r, d, orientation)
+        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, nonlocal, eps_medium, eps_metal, eps_local, omega_p, gamma, v_F, D, omega, r, d, orientation)
     plot_params = (
         (gamma_tot, r'$\gamma_\mathrm{sp} / \gamma_0$', 'linear'),
         (gamma_r, r'$\gamma_\mathrm{r} / \gamma_0$', 'linear'),
@@ -209,11 +209,11 @@ if __name__ == "__main__":
     if save or show:
         processing(save, show, n_max,
                 eps_medium, metal, nonlocal,
-                hbar_omega_p, hbar_gamma, v_F, D,
+                eps_inf, hbar_omega_p, hbar_gamma, v_F, D,
                 radius, radius_unit, orientation, q_0,
                 distance_min, distance_max, distance_n, distance_unit,
                 emission_min, emission_max, emission_n, emission_label)
     if show_convergence:
-        convergence(n_max, eps_medium, metal, hbar_omega_p, hbar_gamma,
+        convergence(n_max, eps_medium, metal, eps_inf, hbar_omega_p, hbar_gamma,
                     radius, radius_unit, orientation, q_0,
                     distance_min, distance_unit, emission_min, emission_label)

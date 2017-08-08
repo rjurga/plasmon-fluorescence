@@ -11,6 +11,7 @@ Computation of:
 - Radiative decay rate.
 - Nonradiative decay rate.
 - Quantum efficiency.
+
 These quantities are normalized to their values in free space.
 
 Metal dielectric functions can be given by:
@@ -20,16 +21,16 @@ Metal dielectric functions can be given by:
 Models of the optical response of the metal:
 - Local.
 - Nonlocal:
-* Hydrodynamic Theory<sup>[[9](https://doi.org/10.1002/cphc.201200992)]</sup>.
-* Generalized Nonlocal Optical Response<sup>[[10](https://doi.org/10.1038/ncomms4809)]</sup>.
+    * Hydrodynamic Theory<sup>[[9](https://doi.org/10.1002/cphc.201200992)]</sup>.
+    * Generalized Nonlocal Optical Response<sup>[[10](https://doi.org/10.1038/ncomms4809)]</sup>.
 
 The results can be:
 - Saved in a text file.
 - Plotted in an interactive window:
-* 1D plots as a function of the emission frequency with a fixed dipole-sphere distance.
-* 1D plots as a function of the dipole-sphere distance with a fixed emission frequency.
-* 2D map plots as a function of the emission frequency and the dipole-sphere distance.
-* 1D plots as a function of the maximum angular mode to verify convergence.
+    * 1D plots as a function of the emission frequency with a fixed dipole-sphere distance.
+    * 1D plots as a function of the dipole-sphere distance with a fixed emission frequency.
+    * 2D map plots as a function of the emission frequency and the dipole-sphere distance.
+    * 1D plots as a function of the maximum angular mode to verify convergence.
 
 ## Metals
 

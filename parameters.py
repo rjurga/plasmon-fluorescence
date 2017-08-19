@@ -1,3 +1,6 @@
+# GENERAL PARAMETERS
+
+
 # Whether to save the results in results.txt.
 save = True
 
@@ -12,12 +15,15 @@ show_convergence = True
 n_max = 111
 
 
+# MATERIALS PARAMETERS
+
+
 # Permittivity of the embedding medium.
 eps_medium = 1.0
 
 # Material of the metal sphere.
-# Only one of the options below should be uncommented.
 # Data files for Olmon and Yang should be put in the Metals directory.
+# Only one of the options below should be uncommented:
 metal = 'Drude'
 # metal = 'Olmon evaporated gold'
 # metal = 'Olmon template-stripped gold'
@@ -50,6 +56,9 @@ v_F = 1.40e6
 D = 8.62e-4
 
 
+# GEOMETRY PARAMETERS
+
+
 # Radius of the metal sphere.
 radius = 30
 
@@ -57,12 +66,19 @@ radius = 30
 # Valid values: 'm', 'cm', 'mm', 'um', 'nm', 'A'.
 radius_unit = 'nm'
 
+
+# DIPOLE PARAMETERS
+
+
 # Orientation of the dipole with respect to the sphere.
 # Valid values: 'radial', 'tangential', 'averaged'.
 orientation = 'averaged'
 
 # Quantum efficiency of the dipole in vacuum.
 q_0 = 1.0
+
+
+# DIPOLE-SPHERE DISTANCE PARAMETERS
 
 
 # Smallest distance between the dipole and the surface of the sphere.
@@ -78,6 +94,9 @@ distance_n = 20
 # Unit in which the distances are given.
 # Valid values: 'm', 'cm', 'mm', 'um', 'nm', 'A'.
 distance_unit = 'nm'
+
+
+# EMISSION PARAMETERS
 
 
 # Smallest value of the emission parameter of the dipole.

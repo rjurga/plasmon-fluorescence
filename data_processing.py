@@ -6,53 +6,46 @@ from matplotlib.colors import LogNorm
 import computations
 
 
-def processing(save, show, n_max,
-               eps_medium, metal, nonlocal,
-               eps_inf, hbar_omega_p, hbar_gamma, v_F, D,
-               radius, radius_unit, orientation, q_0,
-               distance_min, distance_max, distance_n, distance_unit,
-               emission_min, emission_max, emission_n, emission_label):
+def processing(params, materials, geometry, dipole, distance, emission):
     """Convert parameters, get decay rates, save and plot results."""
-    r = convert_units(radius, radius_unit)
-    distance = np.linspace(distance_min, distance_max, num=distance_n)
-    d = convert_units(distance, distance_unit)
-    emission = np.linspace(emission_min, emission_max, num=emission_n)
-    omega = convert_emission_to_omega(emission, emission_label)
-    eps_metal = permittivity(omega, metal, eps_inf, hbar_omega_p, hbar_gamma)
-    eps_local = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
-    omega_p = convert_eV_to_Hz(hbar_omega_p)
-    gamma = convert_eV_to_Hz(hbar_gamma)
-    gamma_tot, gamma_r = computations.decay_rates_vectorized(n_max, nonlocal, eps_medium, eps_metal, eps_local, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    r = convert_units(geometry['radius'], geometry['unit'])
+    d_orig = np.linspace(distance['min'], distance['max'], num=distance['n'])
+    d = convert_units(d_orig, distance['unit'])
+    em_orig = np.linspace(emission['min'], emission['max'], num=emission['n'])
+    omega = convert_emission_to_omega(em_orig, emission['label'])
+    materials['omega_p'] = convert_eV_to_Hz(materials['hbar omega_p'])
+    materials['gamma'] = convert_eV_to_Hz(materials['hbar gamma'])
+    eps_metal = permittivity(omega, materials)
+    eps_inf = bound_response(omega, eps_metal, materials)
+    gamma_tot, gamma_r = computations.decay_rates_vectorized(params['n_max'], materials['nonlocal'], materials['eps_medium'], eps_metal, eps_inf, materials['omega_p'], materials['gamma'], materials['v_F'], materials['D'], omega, r, d, dipole['orientation'])
     gamma_nr = computations.nonradiative_decay_rate(gamma_tot, gamma_r)
-    q = computations.quantum_efficiency(gamma_tot, gamma_r, q_0)
-    if save:
-        save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q)
-    if show:
-        make_plot(distance, distance_n, distance_unit,
-                  emission, emission_n, emission_label,
+    q = computations.quantum_efficiency(gamma_tot, gamma_r, dipole['q_0'])
+    if params['save results']:
+        save_data(d_orig, distance['unit'], em_orig, emission['label'], gamma_tot, gamma_r, gamma_nr, q)
+    if params['show results']:
+        make_plot(d_orig, distance['n'], distance['unit'],
+                  em_orig, emission['n'], emission['label'],
                   gamma_tot, gamma_r, gamma_nr, q)
 
 
-def convergence(n_max, eps_medium, metal, eps_inf, hbar_omega_p, hbar_gamma,
-                radius, radius_unit, orientation, q_0,
-                distance_min, distance_unit, emission_min, emission_label):
+def convergence(params, materials, geometry, dipole, distance, emission):
     """Plot decay rates as a function of the max angular mode order."""
-    r = convert_units(radius, radius_unit)
-    d = convert_units(np.array([distance_min]), distance_unit)
-    omega = convert_emission_to_omega(np.array([emission_min]), emission_label)
-    eps_metal = permittivity(omega, metal, eps_inf, hbar_omega_p, hbar_gamma)
-    eps_local = bound_response(eps_metal, omega, hbar_omega_p, hbar_gamma)
-    omega_p = convert_eV_to_Hz(hbar_omega_p)
-    gamma = convert_eV_to_Hz(hbar_gamma)
-    gamma_tot = np.empty(n_max)
-    gamma_r = np.empty(n_max)
-    for i, n in enumerate(range(1, n_max+1)):
-        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, nonlocal, eps_medium, eps_metal, eps_local, omega_p, gamma, v_F, D, omega, r, d, orientation)
+    r = convert_units(geometry['radius'], geometry['unit'])
+    d = convert_units(np.array([distance['min']]), distance['unit'])
+    omega = convert_emission_to_omega(np.array([emission['min']]), emission['label'])
+    materials['omega_p'] = convert_eV_to_Hz(materials['hbar omega_p'])
+    materials['gamma'] = convert_eV_to_Hz(materials['hbar gamma'])
+    eps_metal = permittivity(omega, materials)
+    eps_inf = bound_response(omega, eps_metal, materials)
+    gamma_tot = np.empty(params['n_max'])
+    gamma_r = np.empty(params['n_max'])
+    for i, n in enumerate(range(1, params['n_max']+1)):
+        gamma_tot[i], gamma_r[i] = computations.decay_rates_vectorized(n, materials['nonlocal'], materials['eps_medium'], eps_metal, eps_inf, materials['omega_p'], materials['gamma'], materials['v_F'], materials['D'], omega, r, d, dipole['orientation'])
     plot_params = (
         (gamma_tot, r'$\gamma_\mathrm{sp} / \gamma_0$', 'linear'),
         (gamma_r, r'$\gamma_\mathrm{r} / \gamma_0$', 'linear'),
-        )
-    make_1d_plot(range(1, n_max+1), r'$n_\mathrm{max}$', plot_params, style='.')
+    )
+    make_1d_plot(range(1, params['n_max']+1), r'$n_\mathrm{max}$', plot_params, style='.')
 
 
 def convert_units(x, x_unit):
@@ -85,34 +78,66 @@ def convert_emission_to_omega(x, x_label):
     return result
 
 
-def permittivity(omega, metal, eps_inf, hbar_omega_p, hbar_gamma):
+def permittivity(omega, materials):
     """Return the permittivity at omega for the specified metal."""
-    if metal == 'Drude':
-        omega_p = convert_eV_to_Hz(hbar_omega_p)
-        gamma = convert_eV_to_Hz(hbar_gamma)
-        eps = eps_inf - np.square(omega_p)/(omega*(omega + 1j*gamma))
-    elif (('Olmon' in metal) and ('gold' in metal)) or (metal == 'Yang silver'):
-        params = {'Olmon evaporated gold': ('Metals/Olmon_PRB2012_EV.dat', None, 2),
-                  'Olmon template-stripped gold': ('Metals/Olmon_PRB2012_TS.dat', None, 2),
-                  'Olmon single-crystal gold': ('Metals/Olmon_PRB2012_SC.dat', None, 2),
-                  'Yang silver': ('Metals/Ag_C_corrected.csv', ',', 1)}
-        fname, d, s = params[metal]
+
+    params_Olmon_Yang = {
+        # 'metal': (path to file, column delimiter, rows to skip),
+        'Olmon evaporated gold': ('Metals/Olmon_PRB2012_EV.dat', None, 2),
+        'Olmon template-stripped gold': ('Metals/Olmon_PRB2012_TS.dat', None, 2),
+        'Olmon single-crystal gold': ('Metals/Olmon_PRB2012_SC.dat', None, 2),
+        'Yang silver': ('Metals/Ag_C_corrected.csv', ',', 1),
+    }
+
+    if materials['metal'] == 'Drude':
+        eps = materials['eps_inf']
+        eps += free_response(omega, materials['omega_p'], materials['gamma'])
+
+    elif materials['metal'] in params_Olmon_Yang.keys():
+        fname, d, s = params_Olmon_Yang[metal]
         data = np.loadtxt(fname, delimiter=d, skiprows=s, usecols=(0,2,3))
+        # flip columns such that omega is increasing
         data = np.flipud(data)
-        omega_data = convert_eV_to_Hz(data[:, 0])
-        re_eps = np.interp(omega, omega_data, data[:, 1], left=np.nan, right=np.nan)
-        im_eps = np.interp(omega, omega_data, data[:, 2], left=np.nan, right=np.nan)
-        eps = re_eps + 1j*im_eps
+        eps = interp_permittivity(omega, data)
+
+    # USER IMPLEMENTED PERMITTIVITY
+    # fill and uncomment the block below
+    # make sure to convert the frequency to the proper units
+    # (omega should be in Hz, you can use convert_emission_to_omega)
+    # make sure to properly order the data for interpolation
+    # (omega should be increasing)
+
+    # elif materials['metal'] == '':
+    #     fname = 'Metals/'
+    #     d = None
+    #     s = 0
+    #     cols = (0,1,2)
+    #     data = np.loadtxt(fname, delimiter=d, skiprows=s, usecols=cols)
+    #     eps = interp_permittivity(omega, data)
+
     else:
         eps = np.nan
+
     return eps
 
 
-def bound_response(eps, omega, hbar_omega_p, hbar_gamma):
+def interp_permittivity(omega, data):
+    omega_data = convert_eV_to_Hz(data[:, 0])
+    re_eps = np.interp(omega, omega_data, data[:, 1], left=np.nan, right=np.nan)
+    im_eps = np.interp(omega, omega_data, data[:, 2], left=np.nan, right=np.nan)
+    return re_eps + 1j*im_eps
+
+
+def bound_response(omega, eps_metal, materials):
     """Return the bound response at omega."""
-    omega_p = convert_eV_to_Hz(hbar_omega_p)
-    gamma = convert_eV_to_Hz(hbar_gamma)
-    return eps + np.square(omega_p)/(omega*(omega + 1j*gamma))
+    eps_inf = np.copy(eps_metal)
+    eps_inf -= free_response(omega, materials['omega_p'], materials['gamma'])
+    return eps_inf
+
+
+def free_response(omega, omega_p, gamma):
+    """Return the Drude free electrons response at omega."""
+    return - np.square(omega_p)/(omega*(omega + 1j*gamma))
 
 
 def convert_eV_to_Hz(x_eV):
@@ -120,7 +145,7 @@ def convert_eV_to_Hz(x_eV):
     return x_eV / constants.hbar * constants.eV
 
 
-def save_data(distance, emission, gamma_tot, gamma_r, gamma_nr, q):
+def save_data(distance, distance_unit, emission, emission_label, gamma_tot, gamma_r, gamma_nr, q):
     """Save the decay rates and quantum efficiency in results.txt."""
     distance_grid, emission_grid = np.meshgrid(distance, emission)
     X = map(np.ravel, (distance_grid, emission_grid, gamma_tot, gamma_r, gamma_nr, q))
@@ -206,14 +231,7 @@ def make_1d_plot(x, x_label, plot_params, style='-'):
 
 if __name__ == "__main__":
     from parameters import *
-    if save or show:
-        processing(save, show, n_max,
-                eps_medium, metal, nonlocal,
-                eps_inf, hbar_omega_p, hbar_gamma, v_F, D,
-                radius, radius_unit, orientation, q_0,
-                distance_min, distance_max, distance_n, distance_unit,
-                emission_min, emission_max, emission_n, emission_label)
-    if show_convergence:
-        convergence(n_max, eps_medium, metal, eps_inf, hbar_omega_p, hbar_gamma,
-                    radius, radius_unit, orientation, q_0,
-                    distance_min, distance_unit, emission_min, emission_label)
+    if params['save results'] or params['show results']:
+        processing(params, materials, geometry, dipole, distance, emission)
+    if params['show convergence']:
+        convergence(params, materials, geometry, dipole, distance, emission)

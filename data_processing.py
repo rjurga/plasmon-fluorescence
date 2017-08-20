@@ -94,7 +94,7 @@ def permittivity(omega, materials):
         eps += free_response(omega, materials['omega_p'], materials['gamma'])
 
     elif materials['metal'] in params_Olmon_Yang.keys():
-        fname, d, s = params_Olmon_Yang[metal]
+        fname, d, s = params_Olmon_Yang[materials['metal']]
         data = np.loadtxt(fname, delimiter=d, skiprows=s, usecols=(0,2,3))
         # flip columns such that omega is increasing
         data = np.flipud(data)
